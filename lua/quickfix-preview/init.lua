@@ -139,7 +139,7 @@ M.setup = function(opts)
           local curr_line_nr = vim.fn.line "."
           qf_preview:close()
           vim.cmd("cc " .. curr_line_nr)
-        end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open", })
+        end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open.", })
       end
 
       if keymaps.openc then
@@ -148,7 +148,7 @@ M.setup = function(opts)
           vim.cmd "cclose"
           qf_preview:close()
           vim.cmd("cc " .. curr_line)
-        end, { buffer = true, desc = "Open the file under the cursor, closing the quickfix list", })
+        end, { buffer = true, desc = "Open the file under the cursor, closing the quickfix list.", })
       end
 
       if keymaps.next then
@@ -158,7 +158,7 @@ M.setup = function(opts)
           qf_preview:close()
           if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
           vim.cmd "copen"
-        end, { buffer = true, desc = "Go to the next file, preserving focus on the quickfix list", })
+        end, { buffer = true, desc = "Go to the next file, preserving focus on the quickfix list.", })
       end
 
       if keymaps.prev then
@@ -168,7 +168,7 @@ M.setup = function(opts)
           qf_preview:close()
           if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
           vim.cmd "copen"
-        end, { buffer = true, desc = "Go to the prev file, preserving focus on the quickfix list", })
+        end, { buffer = true, desc = "Go to the prev file, preserving focus on the quickfix list.", })
       end
     end,
   })
@@ -179,7 +179,7 @@ M.setup = function(opts)
     vim.keymap.set("n", keymaps.cnext.key, function()
       qf_preview:close()
       if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
-    end, { desc = "Go to the next file, losing focus on the quickfix list", })
+    end, { desc = "Go to the next file, losing focus on the quickfix list.", })
   end
 
   if keymaps.cprev then
@@ -188,7 +188,7 @@ M.setup = function(opts)
     vim.keymap.set("n", keymaps.cprev.key, function()
       qf_preview:close()
       if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
-    end, { desc = "Go to the prev file, losing focus on the quickfix list", })
+    end, { desc = "Go to the prev file, losing focus on the quickfix list.", })
   end
 end
 
