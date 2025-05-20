@@ -1,0 +1,12 @@
+{
+  "runtime.path": [
+    "?.lua"
+  ],
+  "workspace.ignoreSubmodules": false,
+  "diagnostics.globals": [
+    "vim"
+  ],
+  "workspace.library": [
+    "$VIMRUNTIME"
+  ]
+}
