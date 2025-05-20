@@ -1,4 +1,6 @@
 local QuickfixPreview = require "quickfix-preview.class"
+local validate = require "quickfix-preview.validator".validate
+local union = require "quickfix-preview.validator".union
 local qf_preview = QuickfixPreview:new()
 local M = {}
 
@@ -36,23 +38,69 @@ local function default(val, default_val)
 end
 
 --- @class QuickfixPreviewOpts
---- @field keymaps QuickfixPreviewKeymaps Keymaps, defaults to none
+--- @field keymaps? QuickfixPreviewKeymaps Keymaps, defaults to none
 
 --- @class QuickfixPreviewKeymaps
---- @field toggle string Toggle the preview
---- @field open string Open the file under the cursor, keep the quickfix list open
---- @field openc string Open the file under the cursor, close the quickfix list
---- @field next QuickFixPreviewKeymapCircularOpts | string :cnext, keep the quickfix list open
---- @field prev QuickFixPreviewKeymapCircularOpts | string :cprev, keep the quickfix list open
---- @field cnext QuickFixPreviewKeymapCircularOpts | string :cnext, closing the preview first
---- @field cprev QuickFixPreviewKeymapCircularOpts | string :cprev, closing the preview first
+--- @field toggle? string Toggle the preview
+--- @field open? string Open the file under the cursor, keep the quickfix list open
+--- @field openc? string Open the file under the cursor, close the quickfix list
+--- @field next? QuickFixPreviewKeymapCircularOpts | string :cnext, keep the quickfix list open
+--- @field prev? QuickFixPreviewKeymapCircularOpts | string :cprev, keep the quickfix list open
+--- @field cnext? QuickFixPreviewKeymapCircularOpts | string :cnext, closing the preview first
+--- @field cprev? QuickFixPreviewKeymapCircularOpts | string :cprev, closing the preview first
 
 --- @class QuickFixPreviewKeymapCircularOpts
 --- @field key string The key to set as the remap
---- @field circular boolean Whether the next/prev command should circle back to the beginning/end. Defaults to `true`
+--- @field circular? boolean Whether the next/prev command should circle back to the beginning/end. Defaults to `true`
 
 --- @param opts QuickfixPreviewOpts | nil
 M.setup = function(opts)
+  --- @type Schema
+  local circular_keymap_schema = {
+    type = union {
+      { type = "string", },
+      {
+        type = "table",
+        entries = {
+          key = { type = "string", },
+          circular = { type = "boolean", optional = true, },
+        },
+      },
+    },
+    optional = true,
+  }
+
+  --- @type Schema
+  local opts_schema = {
+    type = "table",
+    entries = {
+      keymaps = {
+        type = "table",
+        optional = true,
+        entries = {
+          toggle = { type = "string", optional = true, },
+          open = { type = "string", optional = true, },
+          openc = { type = "string", optional = true, },
+          next = circular_keymap_schema,
+          prev = circular_keymap_schema,
+          cnext = circular_keymap_schema,
+          cprev = circular_keymap_schema,
+        },
+      },
+    },
+    optional = true,
+  }
+
+  if not validate(opts_schema, opts) then
+    error(
+      string.format(
+        "Malformed opts! Expected %s, received %s",
+        vim.inspect(opts_schema),
+        vim.inspect(opts)
+      )
+    )
+  end
+
   opts = default(opts, {})
   local keymaps = default(opts.keymaps, {})
 
@@ -104,17 +152,21 @@ M.setup = function(opts)
       end
 
       if keymaps.next then
+        local circular = default(keymaps.next.circular, true)
+
         vim.keymap.set("n", keymaps.next.key, function()
           qf_preview:close()
-          try_catch("cnext", "cfirst")
+          if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
           vim.cmd "copen"
         end, { buffer = true, desc = "Go to the next file, preserving focus on the quickfix list", })
       end
 
       if keymaps.prev then
+        local circular = default(keymaps.prev.circular, true)
+
         vim.keymap.set("n", keymaps.prev.key, function()
           qf_preview:close()
-          try_catch("cprev", "clast")
+          if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
           vim.cmd "copen"
         end, { buffer = true, desc = "Go to the prev file, preserving focus on the quickfix list", })
       end
@@ -122,16 +174,20 @@ M.setup = function(opts)
   })
 
   if keymaps.cnext then
-    vim.keymap.set("n", keymaps.next, function()
+    local circular = default(keymaps.cnext.circular, true)
+
+    vim.keymap.set("n", keymaps.cnext.key, function()
       qf_preview:close()
-      try_catch("cnext", "cfirst")
+      if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
     end, { desc = "Go to the next file, losing focus on the quickfix list", })
   end
 
   if keymaps.cprev then
-    vim.keymap.set("n", keymaps.prev, function()
+    local circular = default(keymaps.cprev.circular, true)
+
+    vim.keymap.set("n", keymaps.cprev.key, function()
       qf_preview:close()
-      try_catch("cprev", "clast")
+      if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
     end, { desc = "Go to the prev file, losing focus on the quickfix list", })
   end
 end
