@@ -29,13 +29,17 @@ function QuickfixPreview:highlight(bufnr)
   end
 end
 
-function QuickfixPreview:is_open()
+function QuickfixPreview:get_preview_win_id()
   for _, win_id in ipairs(vim.api.nvim_list_wins()) do
     if vim.api.nvim_get_option_value("previewwindow", { win = win_id, }) then
-      return true
+      return win_id
     end
   end
-  return false
+  return nil
+end
+
+function QuickfixPreview:is_open()
+  return self:get_preview_win_id() ~= nil
 end
 
 function QuickfixPreview:open()
@@ -49,7 +53,14 @@ function QuickfixPreview:open()
   local curr_qf_item = qf_list[curr_line_nr]
   local path         = vim.fn.bufname(curr_qf_item.bufnr)
 
+
   vim.cmd("aboveleft pedit +" .. curr_qf_item.lnum .. " " .. path)
+
+  local preview_win_id                  = self:get_preview_win_id()
+  vim.wo[preview_win_id].relativenumber = false
+  vim.wo[preview_win_id].number         = true
+  vim.wo[preview_win_id].signcolumn     = "no"
+  vim.wo[preview_win_id].cursorline     = true
 
   self:highlight(curr_qf_item.bufnr)
 end
