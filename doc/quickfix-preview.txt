@@ -92,5 +92,6 @@ TODO                                                   *quickfix-preview-todo*
 
 - [ ] Tests with MiniTest
 - [ ] Allow window-level options through the setup config
+- [ ] Support a `pedit` prefix like `aboveleft` through the setup config
 
 vim:tw=78:ts=8:ft=help:norl:

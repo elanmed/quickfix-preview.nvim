@@ -62,3 +62,4 @@ Accepts a single argument `is_disabled`, returns no value.
 ## TODO
 - [ ] Tests with MiniTest
 - [ ] Allow window-level options through the setup config
+- [ ] Support a `pedit` prefix like `aboveleft` through the setup config
