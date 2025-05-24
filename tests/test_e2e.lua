@@ -11,6 +11,21 @@ local function get_preview_win_id()
   return nil
 end
 
+--- @param preview_win_id number
+local function get_win_info(preview_win_id)
+  local row, col_0_indexed = table.unpack(child.api.nvim_win_get_cursor(preview_win_id))
+  local col = col_0_indexed + 1
+
+  local bufnr = child.api.nvim_win_get_buf(preview_win_id)
+  local buf_path = vim.fs.basename(child.api.nvim_buf_get_name(bufnr))
+
+  return {
+    row = row,
+    col = col,
+    buf_path = buf_path,
+  }
+end
+
 local file_name = "tests/test_sample_file.txt"
 local T = MiniTest.new_set {
   hooks = {
@@ -30,7 +45,7 @@ local T = MiniTest.new_set {
         table.insert(qf_items, {
           bufnr = bufnr,
           lnum = index,
-          col = index,
+          col = 1,
           text = line,
         })
       end
@@ -48,9 +63,25 @@ T["setup"]["autocommands"]["should open the preview on copen"] = function()
   child.cmd "copen"
   local preview_win_id = get_preview_win_id()
   expect.no_equality(preview_win_id, nil)
+  local win_info = get_win_info(preview_win_id)
+  expect.equality(win_info.row, 1)
+  expect.equality(win_info.buf_path, "test_sample_file.txt")
 end
-T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function() end
-T["setup"]["autocommands"]["should close the preview on cclose"] = function() end
+T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function()
+  child.cmd "copen"
+  child.type_keys "j"
+  local preview_win_id = get_preview_win_id()
+  expect.no_equality(preview_win_id, nil)
+  local win_info = get_win_info(preview_win_id)
+  expect.equality(win_info.row, 2)
+  expect.equality(win_info.buf_path, "test_sample_file.txt")
+end
+T["setup"]["autocommands"]["should close the preview on cclose"] = function()
+  child.cmd "copen"
+  expect.no_equality(get_preview_win_id(), nil)
+  child.cmd "cclose"
+  expect.equality(get_preview_win_id(), nil)
+end
 
 T["setup"]["keymaps"] = MiniTest.new_set()
 T["setup"]["keymaps"]["should set no keymaps by default"] = function() end
