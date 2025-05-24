@@ -1,0 +1,81 @@
+local expect = MiniTest.expect
+
+local child = MiniTest.new_child_neovim()
+
+local function get_preview_win_id()
+  for _, win_id in ipairs(child.api.nvim_list_wins()) do
+    if child.api.nvim_get_option_value("previewwindow", { win = win_id, }) then
+      return win_id
+    end
+  end
+  return nil
+end
+
+local file_name = "tests/test_sample_file.txt"
+local T = MiniTest.new_set {
+  hooks = {
+    pre_case = function()
+      child.restart { "-u", "scripts/minimal_init.lua", }
+      child.bo.readonly = false
+      child.lua [[M = require('quickfix-preview').setup()]]
+
+      local lines = { "alpha", "bravo", "charlie", }
+      child.fn.writefile(lines, file_name)
+      child.cmd("edit " .. file_name)
+
+      local bufnr = child.api.nvim_get_current_buf()
+
+      local qf_items = {}
+      for index, line in pairs(lines) do
+        table.insert(qf_items, {
+          bufnr = bufnr,
+          lnum = index,
+          col = index,
+          text = line,
+        })
+      end
+      child.fn.setqflist(qf_items, "r")
+    end,
+    post_once = function()
+      child.fn.delete(file_name)
+      child.stop()
+    end,
+  },
+}
+T["setup"] = MiniTest.new_set()
+T["setup"]["autocommands"] = MiniTest.new_set()
+T["setup"]["autocommands"]["should open the preview on copen"] = function()
+  child.cmd "copen"
+  local preview_win_id = get_preview_win_id()
+  expect.no_equality(preview_win_id, nil)
+end
+T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function() end
+T["setup"]["autocommands"]["should close the preview on cclose"] = function() end
+
+T["setup"]["keymaps"] = MiniTest.new_set()
+T["setup"]["keymaps"]["should set no keymaps by default"] = function() end
+T["setup"]["keymaps"]["toggle should toggle the preview"] = function() end
+T["setup"]["keymaps"]["open should open the current item, keep the quickfix list open"] = function() end
+T["setup"]["keymaps"]["openc should open the current item, close the quickfix list"] = function() end
+
+T["setup"]["keymaps"]["next"] = MiniTest.new_set()
+T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix list open"] = function() end
+T["setup"]["keymaps"]["next"]["should default circular to true"] = function() end
+T["setup"]["keymaps"]["next"]["should respect circular as false"] = function() end
+
+T["setup"]["keymaps"]["prev"] = MiniTest.new_set()
+T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function() end
+T["setup"]["keymaps"]["prev"]["should default circular to true"] = function() end
+T["setup"]["keymaps"]["prev"]["should respect circular as false"] = function() end
+
+T["setup"]["keymaps"]["cnext"] = MiniTest.new_set()
+T["setup"]["keymaps"]["cnext"]["should go to the next item, close the quickfix list"] = function() end
+T["setup"]["keymaps"]["cnext"]["should default circular to true"] = function() end
+T["setup"]["keymaps"]["cnext"]["should respect circular as false"] = function() end
+
+T["setup"]["keymaps"]["cprev"] = MiniTest.new_set()
+T["setup"]["keymaps"]["cprev"]["should go to the prev item, close the quickfix list"] = function() end
+T["setup"]["keymaps"]["cprev"]["should default circular to true"] = function() end
+T["setup"]["keymaps"]["cprev"]["should respect circular as false"] = function() end
+
+return T
