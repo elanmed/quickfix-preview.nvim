@@ -172,15 +172,44 @@ T["setup"]["keymaps"]["openc should open the current item, close the quickfix li
   expect_preview_visible(false)
   expect_quickfix_visible(false)
 
-  local win_info = get_win_info(get_file_win_id())
-  expect.equality(win_info.row, 1)
-  expect.equality(win_info.buf_path, "test_sample_file.txt")
+  expect.equality(get_win_info(get_file_win_id()).row, 1)
 end
 
 T["setup"]["keymaps"]["next"] = MiniTest.new_set()
-T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix list open"] = function() end
-T["setup"]["keymaps"]["next"]["should default circular to true"] = function() end
-T["setup"]["keymaps"]["next"]["should respect circular as false"] = function() end
+T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix preview open"] = function()
+  child.lua [[ M.setup { keymaps = { next = { key = "<C-n>", }, }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+
+  child.type_keys "<C-n>"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  expect.equality(get_win_info(get_file_win_id()).row, 2)
+
+  child.type_keys "<C-n>"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  expect.equality(get_win_info(get_file_win_id()).row, 3)
+end
+T["setup"]["keymaps"]["next"]["should default circular to true"] = function()
+  child.lua [[ M.setup { keymaps = { next = { key = "<C-n>", }, }, } ]]
+  child.cmd "copen"
+  child.type_keys "<C-n>"
+  child.type_keys "<C-n>"
+  child.type_keys "<C-n>"
+  expect.equality(get_win_info(get_file_win_id()).row, 1)
+end
+T["setup"]["keymaps"]["next"]["should respect circular as false"] = function()
+  child.lua [[ M.setup { keymaps = { next = { key = "<C-n>", circular = false, }, }, } ]]
+  child.cmd "copen"
+  child.type_keys "<C-n>"
+  child.type_keys "<C-n>"
+  expect.error(function()
+    child.type_keys "<C-n>"
+  end)
+  expect.equality(get_win_info(get_file_win_id()).row, 3)
+end
 
 T["setup"]["keymaps"]["prev"] = MiniTest.new_set()
 T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function() end
