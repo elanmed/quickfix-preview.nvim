@@ -4,3 +4,6 @@
 [submodule "deps/mini.nvim"]
 	path = deps/mini.nvim
 	url = https://github.com/echasnovski/mini.nvim
+[submodule "deps/nvim-treesitter"]
+	path = deps/nvim-treesitter
+	url = https://github.com/nvim-treesitter/nvim-treesitter

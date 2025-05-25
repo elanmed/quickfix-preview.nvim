@@ -1,7 +1,7 @@
 local expect = MiniTest.expect
 
 local child = MiniTest.new_child_neovim()
-local file_name = "test_sample_file.txt"
+local file_name = "test_file.lua"
 
 local function get_preview_win_id()
   for _, win_id in ipairs(child.api.nvim_list_wins()) do
@@ -84,9 +84,10 @@ local T = MiniTest.new_set {
     pre_case = function()
       child.restart { "-u", "scripts/minimal_init.lua", }
       child.bo.readonly = false
+      child.lua [[require "nvim-treesitter.configs".setup {} ]]
       child.lua [[M = require('quickfix-preview')]]
 
-      local lines = { "alpha", "bravo", "charlie", }
+      local lines = { "-- alpha", "-- bravo", "-- charlie", }
       child.fn.writefile(lines, file_name)
       child.cmd("edit " .. file_name)
 
@@ -122,7 +123,7 @@ T["setup"]["autocommands"]["should open the preview on copen"] = function()
   expect_preview_visible(true)
   local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 1)
-  expect.equality(win_info.buf_path, "test_sample_file.txt")
+  expect.equality(win_info.buf_path, file_name)
 end
 T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function()
   child.cmd "copen"
@@ -130,7 +131,7 @@ T["setup"]["autocommands"]["should refresh the preview on cursor move"] = functi
   expect_preview_visible(true)
   local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 2)
-  expect.equality(win_info.buf_path, "test_sample_file.txt")
+  expect.equality(win_info.buf_path, file_name)
 end
 T["setup"]["autocommands"]["should close the preview on cclose"] = function()
   child.cmd "copen"
@@ -161,7 +162,7 @@ T["setup"]["keymaps"]["open should open the current item, keep the quickfix list
 
   local win_info = get_win_info(get_file_win_id())
   expect.equality(win_info.row, 1)
-  expect.equality(win_info.buf_path, "test_sample_file.txt")
+  expect.equality(win_info.buf_path, file_name)
 end
 T["setup"]["keymaps"]["openc should open the current item, close the quickfix list"] = function()
   child.lua [[ M.setup { keymaps = { openc = "<cr>", }, } ]]
