@@ -1,6 +1,7 @@
 local expect = MiniTest.expect
 
 local child = MiniTest.new_child_neovim()
+local file_name = "test_sample_file.txt"
 
 local function get_preview_win_id()
   for _, win_id in ipairs(child.api.nvim_list_wins()) do
@@ -11,12 +12,64 @@ local function get_preview_win_id()
   return nil
 end
 
---- @param preview_win_id number
-local function get_win_info(preview_win_id)
-  local row, col_0_indexed = table.unpack(child.api.nvim_win_get_cursor(preview_win_id))
+local function get_quickfix_win_id()
+  for _, win_id in ipairs(child.api.nvim_list_wins()) do
+    local bufnr = child.api.nvim_win_get_buf(win_id)
+    local buf_type = child.api.nvim_get_option_value("buftype", { buf = bufnr, })
+    if buf_type == "quickfix" then
+      return win_id
+    end
+  end
+  return nil
+end
+
+local function get_file_win_id()
+  for _, win_id in ipairs(child.api.nvim_list_wins()) do
+    local bufnr = child.api.nvim_win_get_buf(win_id)
+    local buf_name = vim.fs.basename(child.api.nvim_buf_get_name(bufnr))
+    if buf_name == file_name then
+      return win_id
+    end
+  end
+  return nil
+end
+
+local expect_preview_visible = MiniTest.new_expectation(
+  "quickfix preview visible",
+  function(is)
+    local preview_win_id = get_preview_win_id()
+    return is and preview_win_id ~= nil or preview_win_id == nil
+  end,
+  function(is)
+    if is then
+      return "Expected the preview to be visible, was not."
+    else
+      return "Expected the preview not to be visible, was."
+    end
+  end
+)
+
+local expect_quickfix_visible = MiniTest.new_expectation(
+  "quickfix list visible",
+  function(is)
+    local quickfix_win_id = get_quickfix_win_id()
+    return is and quickfix_win_id ~= nil or quickfix_win_id == nil
+  end,
+  function(is)
+    if is then
+      return "Expected the quickfix list to be visible, was not."
+    else
+      return "Expected the quickfix list not to be visible, was."
+    end
+  end
+)
+
+--- @param win_id number
+local function get_win_info(win_id)
+  local row, col_0_indexed = table.unpack(child.api.nvim_win_get_cursor(win_id))
   local col = col_0_indexed + 1
 
-  local bufnr = child.api.nvim_win_get_buf(preview_win_id)
+  local bufnr = child.api.nvim_win_get_buf(win_id)
   local buf_path = vim.fs.basename(child.api.nvim_buf_get_name(bufnr))
 
   return {
@@ -26,13 +79,12 @@ local function get_win_info(preview_win_id)
   }
 end
 
-local file_name = "tests/test_sample_file.txt"
 local T = MiniTest.new_set {
   hooks = {
     pre_case = function()
       child.restart { "-u", "scripts/minimal_init.lua", }
       child.bo.readonly = false
-      child.lua [[M = require('quickfix-preview').setup()]]
+      child.lua [[M = require('quickfix-preview')]]
 
       local lines = { "alpha", "bravo", "charlie", }
       child.fn.writefile(lines, file_name)
@@ -58,36 +110,72 @@ local T = MiniTest.new_set {
   },
 }
 T["setup"] = MiniTest.new_set()
-T["setup"]["autocommands"] = MiniTest.new_set()
+T["setup"]["autocommands"] = MiniTest.new_set {
+  hooks = {
+    pre_case = function()
+      child.lua "M.setup()"
+    end,
+  },
+}
 T["setup"]["autocommands"]["should open the preview on copen"] = function()
   child.cmd "copen"
-  local preview_win_id = get_preview_win_id()
-  expect.no_equality(preview_win_id, nil)
-  local win_info = get_win_info(preview_win_id)
+  expect_preview_visible(true)
+  local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 1)
   expect.equality(win_info.buf_path, "test_sample_file.txt")
 end
 T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function()
   child.cmd "copen"
   child.type_keys "j"
-  local preview_win_id = get_preview_win_id()
-  expect.no_equality(preview_win_id, nil)
-  local win_info = get_win_info(preview_win_id)
+  expect_preview_visible(true)
+  local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 2)
   expect.equality(win_info.buf_path, "test_sample_file.txt")
 end
 T["setup"]["autocommands"]["should close the preview on cclose"] = function()
   child.cmd "copen"
-  expect.no_equality(get_preview_win_id(), nil)
+  expect_preview_visible(true)
   child.cmd "cclose"
-  expect.equality(get_preview_win_id(), nil)
+  expect_preview_visible(false)
 end
 
 T["setup"]["keymaps"] = MiniTest.new_set()
-T["setup"]["keymaps"]["should set no keymaps by default"] = function() end
-T["setup"]["keymaps"]["toggle should toggle the preview"] = function() end
-T["setup"]["keymaps"]["open should open the current item, keep the quickfix list open"] = function() end
-T["setup"]["keymaps"]["openc should open the current item, close the quickfix list"] = function() end
+
+T["setup"]["keymaps"]["toggle should toggle the preview"] = function()
+  child.lua [[ M.setup { keymaps = { toggle = "t", }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  child.type_keys "t"
+  expect_preview_visible(false)
+  child.type_keys "t"
+  expect_preview_visible(true)
+end
+T["setup"]["keymaps"]["open should open the current item, keep the quickfix list open"] = function()
+  child.lua [[ M.setup { keymaps = { open = "o", }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  child.type_keys "o"
+  expect_preview_visible(false)
+  expect_quickfix_visible(true)
+
+  local win_info = get_win_info(get_file_win_id())
+  expect.equality(win_info.row, 1)
+  expect.equality(win_info.buf_path, "test_sample_file.txt")
+end
+T["setup"]["keymaps"]["openc should open the current item, close the quickfix list"] = function()
+  child.lua [[ M.setup { keymaps = { openc = "<cr>", }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  child.type_keys "<cr>"
+  expect_preview_visible(false)
+  expect_quickfix_visible(false)
+
+  local win_info = get_win_info(get_file_win_id())
+  expect.equality(win_info.row, 1)
+  expect.equality(win_info.buf_path, "test_sample_file.txt")
+end
 
 T["setup"]["keymaps"]["next"] = MiniTest.new_set()
 T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix list open"] = function() end
