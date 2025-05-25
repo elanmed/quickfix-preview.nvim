@@ -2,6 +2,8 @@
 
 A simple preview for quickfix list, updates as you move your cursor.
 
+![demo](https://elanmed.dev/nvim-plugins/quickfix-preview.gif)
+
 ## Setup
 
 ```lua 
