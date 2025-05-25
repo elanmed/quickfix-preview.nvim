@@ -90,7 +90,8 @@ Accepts a single argument `is_disabled`, returns no value.
 TODO                                                   *quickfix-preview-todo*
 
 
-- [ ] Tests with MiniTest
+- [x] Tests with MiniTest
+- [ ] Demo gif
 - [ ] Allow window-level options through the setup config
 - [ ] Support a `pedit` prefix like `aboveleft` through the setup config
 

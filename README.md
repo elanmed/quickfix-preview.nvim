@@ -60,6 +60,7 @@ Sets if the quickfix preview is disabled.
 Accepts a single argument `is_disabled`, returns no value.
 
 ## TODO
-- [ ] Tests with MiniTest
+- [x] Tests with MiniTest
+- [ ] Demo gif
 - [ ] Allow window-level options through the setup config
 - [ ] Support a `pedit` prefix like `aboveleft` through the setup config
