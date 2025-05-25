@@ -36,11 +36,11 @@ require "quickfix-preview".setup {
 ## Exported functions
 
 By default: 
-    - The preview will open when the quickfix list is opened
-        - Unless the `toggle` keymap was invoked
-    - The preview will update When moving the cursor up or down to another item in the quickfix list
-        - Unless the `toggle` keymap was invoked
-    - The preview will close when the quickfix list is closed
+- The preview will open when the quickfix list is opened
+    - Unless the `toggle` keymap was invoked
+- The preview will update When moving the cursor up or down to another item in the quickfix list
+    - Unless the `toggle` keymap was invoked
+- The preview will close when the quickfix list is closed
 
 To override this behavior, the following functions are exposed:
 
