@@ -212,9 +212,42 @@ T["setup"]["keymaps"]["next"]["should respect circular as false"] = function()
 end
 
 T["setup"]["keymaps"]["prev"] = MiniTest.new_set()
-T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function() end
-T["setup"]["keymaps"]["prev"]["should default circular to true"] = function() end
-T["setup"]["keymaps"]["prev"]["should respect circular as false"] = function() end
+T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function()
+  child.lua [[ M.setup { keymaps = { next = { key = "<C-n>", }, prev = { key = "<C-p>", }, }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+
+  child.type_keys "<C-n>"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  expect.equality(get_win_info(get_file_win_id()).row, 2)
+
+  child.type_keys "<C-p>"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+  expect.equality(get_win_info(get_file_win_id()).row, 1)
+end
+T["setup"]["keymaps"]["prev"]["should default circular to true"] = function()
+  child.lua [[ M.setup { keymaps = { prev = { key = "<C-p>", }, }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+
+  child.type_keys "<C-p>"
+  expect.equality(get_win_info(get_file_win_id()).row, 3)
+end
+T["setup"]["keymaps"]["prev"]["should respect circular as false"] = function()
+  child.lua [[ M.setup { keymaps = { prev = { key = "<C-p>", circular = false }, }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
+
+  expect.error(function()
+    child.type_keys "<C-p>"
+  end)
+  expect.equality(get_win_info(get_file_win_id()).row, 1)
+end
 
 T["setup"]["keymaps"]["cnext"] = MiniTest.new_set()
 T["setup"]["keymaps"]["cnext"]["should go to the next item, close the quickfix list"] = function() end
