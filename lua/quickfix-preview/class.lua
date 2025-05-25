@@ -21,10 +21,11 @@ end
 --- @param bufnr number
 function QuickfixPreview:highlight(bufnr)
   if not self.parsed_buffers[bufnr] then
-    vim.api.nvim_buf_call(bufnr, function()
-      vim.cmd "filetype detect"
-      pcall(vim.treesitter.start, bufnr)
-    end)
+    local filetype = vim.filetype.match { buf = bufnr, }
+    if filetype == nil then return end
+    local lang = vim.treesitter.language.get_lang(filetype)
+    vim.treesitter.start(bufnr, lang)
+
     self.parsed_buffers[bufnr] = true
   end
 end
