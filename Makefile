@@ -12,7 +12,7 @@ docs:
 
 lint: 
 	# https://luals.github.io/#install
-	lua-language-server --check=./lua --checklevel=error
+	lua-language-server --check=./lua --checklevel=Error
 
 test:
 	nvim --headless --noplugin -u ./scripts/minimal_init.lua -c "lua MiniTest.run()"
