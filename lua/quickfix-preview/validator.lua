@@ -1,4 +1,4 @@
--- https://github.com/ElanMedoff/schema-validator.nvim/blob/b3124a429fb74341e22f334ec9e9c2bf3c427117/lua/schema-validator/init.lua
+-- https://github.com/ElanMedoff/schema-validator.nvim/blob/b364d6fe7d0b65210124849b232eca577e4b41c9/lua/schema-validator/init.lua
 
 --- @generic T
 --- @param val T | nil
@@ -14,7 +14,7 @@ end
 local M = {}
 
 --- @alias CustomValidator fun(val: any): boolean
---- @alias Type "nil" | "number" | "string" | "boolean" | "function" | "table" | CustomValidator
+--- @alias Type "nil" | "number" | "string" | "boolean" | "function" | "table" | "any" | CustomValidator
 
 --- @class BaseSchema
 --- @field type Type
@@ -54,7 +54,7 @@ M.validate = function(schema, val)
   end
 
   if type(schema.type) == "string" then
-    if not vim.tbl_contains({ "nil", "number", "string", "boolean", "function", "table", }, schema.type) then
+    if not vim.tbl_contains({ "nil", "number", "string", "boolean", "function", "table", "any", }, schema.type) then
       error(
         string.format("Expected `schema.type` to be one of the following: %s, received `%s`. Schema: %s",
           "`nil`, `number`, `string`, `boolean`, `function`, `table`",
@@ -96,8 +96,8 @@ M.validate = function(schema, val)
       end
     end
 
+    if schema.type == "any" then return true end
     if type(val) == schema.type then return true end
-
     return false
   elseif type(schema.type) == "function" then
     return schema.type(val)
