@@ -29,7 +29,7 @@ require "quickfix-preview".setup {
     select_close_preview = "o",
     -- Open the file under the cursor, closing the quickfix list
     -- Buffer-level remap
-    select_close_qf_list = "<cr>",
+    select_close_quickfix = "<cr>",
     -- :cnext, preserving focus on the quickfix list
     -- Buffer-level remap
     next = {

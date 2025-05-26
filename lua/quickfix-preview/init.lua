@@ -14,7 +14,7 @@ local M = {}
 --- @class QuickfixPreviewKeymaps
 --- @field toggle? string Toggle the quickfix preview
 --- @field select_close_preview? string Open the file undor the cursor, keeping the quickfix list open
---- @field select_close_qf_list? string Open the file under the cursor, closing the quickfix list
+--- @field select_close_quickfix? string Open the file under the cursor, closing the quickfix list
 --- @field next? QuickFixPreviewKeymapCircularOpts | string :cnext, preserving focus on the quickfix list
 --- @field prev? QuickFixPreviewKeymapCircularOpts | string :cprev, preserving focus on the quickfix list
 --- @field cnext? QuickFixPreviewKeymapCircularOpts | string :cnext, closing the preview first
@@ -64,7 +64,7 @@ M.setup = function(opts)
         entries = {
           toggle = { type = "string", optional = true, },
           select_close_preview = { type = "string", optional = true, },
-          select_close_qf_list = { type = "string", optional = true, },
+          select_close_quickfix = { type = "string", optional = true, },
           next = circular_keymap_schema,
           prev = circular_keymap_schema,
           cnext = circular_keymap_schema,
@@ -136,8 +136,8 @@ M.setup = function(opts)
         end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open", })
       end
 
-      if keymaps.select_close_qf_list then
-        vim.keymap.set("n", keymaps.select_close_qf_list, function()
+      if keymaps.select_close_quickfix then
+        vim.keymap.set("n", keymaps.select_close_quickfix, function()
           local curr_qf_index = helpers.get_curr_qf_index()
           if curr_qf_index == nil then return end
 
