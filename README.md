@@ -16,7 +16,7 @@ require "quickfix-preview".setup {
     cursorline = true,
   },
   -- A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
-  pedit_prefix = "",
+  pedit_prefix = "aboveleft", 
   -- A postfix passed to :pedit. Defaults to an empty string
   pedit_postfix = "",
   -- By default, no keymaps are set
