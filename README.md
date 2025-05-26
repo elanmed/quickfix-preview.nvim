@@ -43,8 +43,3 @@ require "quickfix-preview".setup {
   },
 }
 ```
-
-## TODO
-- [x] Demo gif
-- [x] Support a `pedit` prefix like `aboveleft` through the setup config
-- [ ] pedit_prefix, pedit_postfix tests

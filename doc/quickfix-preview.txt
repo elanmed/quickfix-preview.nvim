@@ -4,7 +4,6 @@
 Table of Contents                         *quickfix-preview-table-of-contents*
 
 Sample configuration ................. |quickfix-preview-sample-configuration|
-TODO ................................................. |quickfix-preview-todo|
 
 ==============================================================================
 QUICKFIX-PREVIEW.NVIM                 *quickfix-preview-quickfix-preview.nvim*
@@ -56,13 +55,5 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
       },
     }
 <
-
-------------------------------------------------------------------------------
-TODO                                                   *quickfix-preview-todo*
-
-
-- [x] Demo gif
-- [x] Support a `pedit` prefix like `aboveleft` through the setup config
-- [ ] pedit_prefix, pedit_postfix tests
 
 vim:tw=78:ts=8:ft=help:norl:
