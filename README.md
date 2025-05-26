@@ -24,9 +24,9 @@ require "quickfix-preview".setup {
     -- Toggle the quickfix preview
     toggle = "t",
     -- Open the file undor the cursor, keeping the quickfix list open
-    open = "o",
+    select_close_preview = "o",
     -- Open the file under the cursor, closing the quickfix list
-    openc = "<cr>",
+    select_close_qf_list = "<cr>",
     -- :cnext, preserving focus on the quickfix list
     next = {
       key = "<C-n>",

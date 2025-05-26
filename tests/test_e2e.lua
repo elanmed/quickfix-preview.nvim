@@ -173,8 +173,8 @@ T["setup"]["keymaps"]["toggle should toggle the preview"] = function()
   child.type_keys "t"
   expect_preview_visible(true)
 end
-T["setup"]["keymaps"]["open should open the current item, keep the quickfix list open"] = function()
-  child.lua [[ M.setup { keymaps = { open = "o", }, } ]]
+T["setup"]["keymaps"]["select_close_preview should open the current item, keep the quickfix list open"] = function()
+  child.lua [[ M.setup { keymaps = { select_close_preview = "o", }, } ]]
   child.cmd "copen"
   expect_preview_visible(true)
   expect_quickfix_visible(true)
@@ -186,8 +186,8 @@ T["setup"]["keymaps"]["open should open the current item, keep the quickfix list
   expect.equality(win_info.row, 1)
   expect.equality(win_info.buf_path, file_name)
 end
-T["setup"]["keymaps"]["openc should open the current item, close the quickfix list"] = function()
-  child.lua [[ M.setup { keymaps = { openc = "<cr>", }, } ]]
+T["setup"]["keymaps"]["select_close_qf_list should open the current item, close the quickfix list"] = function()
+  child.lua [[ M.setup { keymaps = { select_close_qf_list = "<cr>", }, } ]]
   child.cmd "copen"
   expect_preview_visible(true)
   expect_quickfix_visible(true)

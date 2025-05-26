@@ -13,8 +13,8 @@ local M = {}
 
 --- @class QuickfixPreviewKeymaps
 --- @field toggle? string Toggle the quickfix preview
---- @field open? string Open the file undor the cursor, keeping the quickfix list open
---- @field openc? string Open the file under the cursor, closing the quickfix list
+--- @field select_close_preview? string Open the file undor the cursor, keeping the quickfix list open
+--- @field select_close_qf_list? string Open the file under the cursor, closing the quickfix list
 --- @field next? QuickFixPreviewKeymapCircularOpts | string :cnext, preserving focus on the quickfix list
 --- @field prev? QuickFixPreviewKeymapCircularOpts | string :cprev, preserving focus on the quickfix list
 --- @field cnext? QuickFixPreviewKeymapCircularOpts | string :cnext, closing the preview first
@@ -63,8 +63,8 @@ M.setup = function(opts)
         optional = true,
         entries = {
           toggle = { type = "string", optional = true, },
-          open = { type = "string", optional = true, },
-          openc = { type = "string", optional = true, },
+          select_close_preview = { type = "string", optional = true, },
+          select_close_qf_list = { type = "string", optional = true, },
           next = circular_keymap_schema,
           prev = circular_keymap_schema,
           cnext = circular_keymap_schema,
@@ -126,16 +126,16 @@ M.setup = function(opts)
         end, { buffer = true, desc = "Toggle the quickfix preview", })
       end
 
-      if keymaps.open then
-        vim.keymap.set("n", keymaps.open, function()
+      if keymaps.select_close_preview then
+        vim.keymap.set("n", keymaps.select_close_preview, function()
           local curr_line_nr = vim.fn.line "."
           qf_preview:close()
           vim.cmd("cc " .. curr_line_nr)
         end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open", })
       end
 
-      if keymaps.openc then
-        vim.keymap.set("n", keymaps.openc, function()
+      if keymaps.select_close_qf_list then
+        vim.keymap.set("n", keymaps.select_close_qf_list, function()
           local curr_line = vim.fn.line "."
           vim.cmd "cclose"
           qf_preview:close()
