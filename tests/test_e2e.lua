@@ -145,7 +145,6 @@ T["setup"]["preview_win_opts"] = function()
   child.cmd "copen"
   expect_preview_visible(true)
   local preview_win_id = get_preview_win_id()
-  print(preview_win_id)
   local number_opt = child.api.nvim_get_option_value("number", { win = preview_win_id, })
   expect.equality(number_opt, true)     -- defaults to `false`
   local cursorline_opt = child.api.nvim_get_option_value("cursorline", { win = preview_win_id, })

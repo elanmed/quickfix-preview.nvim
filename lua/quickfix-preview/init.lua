@@ -5,20 +5,6 @@ local union = require "quickfix-preview.validator".union
 local qf_preview = QuickfixPreview:new()
 local M = {}
 
-M.close = function()
-  qf_preview:close()
-end
-
---- @param opts QuickfixPreviewOpenOpts
-M.open = function(opts)
-  qf_preview:open(opts)
-end
-
---- @param is_disabled boolean
-M.set_preview_disabled = function(is_disabled)
-  qf_preview:set_preview_disabled(is_disabled)
-end
-
 --- @class QuickfixPreviewOpts
 --- @field pedit_prefix? string A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
 --- @field pedit_postfix? string A postfix passed to :pedit. Defaults to an empty string

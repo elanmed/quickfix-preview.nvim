@@ -44,34 +44,7 @@ require "quickfix-preview".setup {
 }
 ```
 
-## Exported functions
-
-By default: 
-- The preview will open when the quickfix list is opened
-    - Unless the `toggle` keymap was invoked
-- The preview will update When moving the cursor up or down to another item in the quickfix list
-    - Unless the `toggle` keymap was invoked
-- The preview will close when the quickfix list is closed
-
-To override this behavior, the following functions are exposed:
-
-### `open`
-Opens the quickfix preview.
-
-Accepts no arguments, returns no value.
-
-### `close`
-Closes the quickfix preview.
-
-Accepts no arguments, returns no value.
-
-### `set_preview_disabled`
-Sets if the quickfix preview is disabled.
-
-Accepts a single argument `is_disabled`, returns no value.
-
 ## TODO
-- [ ] pedit_prefix, pedit_postfix tests
 - [x] Demo gif
-- [ ] Allow window-level options through the setup config
 - [x] Support a `pedit` prefix like `aboveleft` through the setup config
+- [ ] pedit_prefix, pedit_postfix tests

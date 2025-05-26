@@ -4,10 +4,6 @@
 Table of Contents                         *quickfix-preview-table-of-contents*
 
 Sample configuration ................. |quickfix-preview-sample-configuration|
-Exported functions ..................... |quickfix-preview-exported-functions|
-`open` ............................................... |quickfix-preview-open|
-`close` ............................................. |quickfix-preview-close|
-`set_preview_disabled` ............... |quickfix-preview-set_preview_disabled|
 TODO ................................................. |quickfix-preview-todo|
 
 ==============================================================================
@@ -62,50 +58,11 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
 <
 
 ------------------------------------------------------------------------------
-EXPORTED FUNCTIONS                       *quickfix-preview-exported-functions*
-
-
-By default:
-
-- The preview will open when the quickfix list is opened - Unless the `toggle`
-  keymap was invoked
-- The preview will update When moving the cursor up or down to another item in
-  the quickfix list - Unless the `toggle` keymap was invoked
-- The preview will close when the quickfix list is closed
-To override this behavior, the following functions are exposed:
-
-
-                                                                              
-`OPEN`                                                 *quickfix-preview-open*
-
-Opens the quickfix preview.
-
-Accepts no arguments, returns no value.
-
-
-                                                                              
-`CLOSE`                                               *quickfix-preview-close*
-
-Closes the quickfix preview.
-
-Accepts no arguments, returns no value.
-
-
-                                                                              
-`SET_PREVIEW_DISABLED`                 *quickfix-preview-set_preview_disabled*
-
-Sets if the quickfix preview is disabled.
-
-Accepts a single argument `is_disabled`, returns no value.
-
-
-------------------------------------------------------------------------------
 TODO                                                   *quickfix-preview-todo*
 
 
-- [ ] pedit_prefix, pedit_postfix tests
 - [x] Demo gif
-- [ ] Allow window-level options through the setup config
 - [x] Support a `pedit` prefix like `aboveleft` through the setup config
+- [ ] pedit_prefix, pedit_postfix tests
 
 vim:tw=78:ts=8:ft=help:norl:
