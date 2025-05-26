@@ -40,12 +40,19 @@ function QuickfixPreview:is_open()
   return self:get_preview_win_id() ~= nil
 end
 
---- @param pedit_prefix? string
---- @param pedit_postfix? string
-function QuickfixPreview:open(pedit_prefix, pedit_postfix)
+--- @class QuickfixPreviewOpenOpts
+--- @field pedit_prefix? string
+--- @field pedit_postfix? string
+--- @field preview_win_opts? vim.wo
+
+--- @param opts QuickfixPreviewOpenOpts
+function QuickfixPreview:open(opts)
   if self.preview_disabled then return end
-  local defaulted_pedit_prefix = helpers.default(pedit_prefix, "aboveleft")
-  local defaulted_pedit_postfix = helpers.default(pedit_postfix, "")
+
+  opts = helpers.default(opts, {})
+  local pedit_prefix = helpers.default(opts.pedit_prefix, "aboveleft")
+  local pedit_postfix = helpers.default(opts.pedit_postfix, "")
+  local preview_win_opts = helpers.default(opts.preview_win_opts, {})
 
   --- @type QuickfixItem[]
   local qf_list = vim.fn.getqflist()
@@ -55,15 +62,13 @@ function QuickfixPreview:open(pedit_prefix, pedit_postfix)
   local curr_qf_item = qf_list[curr_line_nr]
   local path         = vim.fn.bufname(curr_qf_item.bufnr)
 
-  local pedit_cmd    = string.format("%s pedit +%s %s %s", defaulted_pedit_prefix, curr_qf_item.lnum, path,
-    defaulted_pedit_postfix)
+  local pedit_cmd    = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
   vim.cmd(pedit_cmd)
 
-  local preview_win_id                  = self:get_preview_win_id()
-  vim.wo[preview_win_id].relativenumber = false
-  vim.wo[preview_win_id].number         = true
-  vim.wo[preview_win_id].signcolumn     = "no"
-  vim.wo[preview_win_id].cursorline     = true
+  local preview_win_id = self:get_preview_win_id()
+  for win_opt_key, win_opt_val in pairs(preview_win_opts) do
+    vim.wo[preview_win_id][win_opt_key] = win_opt_val
+  end
 
   self:highlight(curr_qf_item.bufnr)
 end
