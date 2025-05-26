@@ -110,6 +110,7 @@ local T = MiniTest.new_set {
     end,
   },
 }
+
 T["setup"] = MiniTest.new_set()
 T["setup"]["autocommands"] = MiniTest.new_set {
   hooks = {
@@ -139,9 +140,19 @@ T["setup"]["autocommands"]["should close the preview on cclose"] = function()
   child.cmd "cclose"
   expect_preview_visible(false)
 end
+T["setup"]["preview_win_opts"] = function()
+  child.lua [[ M.setup { preview_win_opts = { number = true, cursorline = true }, } ]]
+  child.cmd "copen"
+  expect_preview_visible(true)
+  local preview_win_id = get_preview_win_id()
+  print(preview_win_id)
+  local number_opt = child.api.nvim_get_option_value("number", { win = preview_win_id, })
+  expect.equality(number_opt, true)     -- defaults to `false`
+  local cursorline_opt = child.api.nvim_get_option_value("cursorline", { win = preview_win_id, })
+  expect.equality(cursorline_opt, true) -- defaults to `false`
+end
 
 T["setup"]["keymaps"] = MiniTest.new_set()
-
 T["setup"]["keymaps"]["toggle should toggle the preview"] = function()
   child.lua [[ M.setup { keymaps = { toggle = "t", }, } ]]
   child.cmd "copen"
