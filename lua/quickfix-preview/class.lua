@@ -1,3 +1,5 @@
+local helpers = require "quickfix-preview.helpers"
+
 --- @class QuickfixItem
 --- @field bufnr number
 --- @field lnum number
@@ -8,7 +10,6 @@ QuickfixPreview.__index = QuickfixPreview
 function QuickfixPreview:new()
   local this = {
     preview_disabled = false,
-    parsed_buffers = {},
   }
   return setmetatable(this, QuickfixPreview)
 end
@@ -20,14 +21,10 @@ end
 
 --- @param bufnr number
 function QuickfixPreview:highlight(bufnr)
-  if not self.parsed_buffers[bufnr] then
-    local filetype = vim.filetype.match { buf = bufnr, }
-    if filetype == nil then return end
-    local lang = vim.treesitter.language.get_lang(filetype)
-    vim.treesitter.start(bufnr, lang)
-
-    self.parsed_buffers[bufnr] = true
-  end
+  local filetype = vim.filetype.match { buf = bufnr, }
+  if filetype == nil then return end
+  local lang = vim.treesitter.language.get_lang(filetype)
+  vim.treesitter.start(bufnr, lang)
 end
 
 function QuickfixPreview:get_preview_win_id()
@@ -43,8 +40,12 @@ function QuickfixPreview:is_open()
   return self:get_preview_win_id() ~= nil
 end
 
-function QuickfixPreview:open()
+--- @param pedit_prefix? string
+--- @param pedit_postfix? string
+function QuickfixPreview:open(pedit_prefix, pedit_postfix)
   if self.preview_disabled then return end
+  local defaulted_pedit_prefix = helpers.default(pedit_prefix, "aboveleft")
+  local defaulted_pedit_postfix = helpers.default(pedit_postfix, "")
 
   --- @type QuickfixItem[]
   local qf_list = vim.fn.getqflist()
@@ -54,8 +55,9 @@ function QuickfixPreview:open()
   local curr_qf_item = qf_list[curr_line_nr]
   local path         = vim.fn.bufname(curr_qf_item.bufnr)
 
-
-  vim.cmd("aboveleft pedit +" .. curr_qf_item.lnum .. " " .. path)
+  local pedit_cmd    = string.format("%s pedit +%s %s %s", defaulted_pedit_prefix, curr_qf_item.lnum, path,
+    defaulted_pedit_postfix)
+  vim.cmd(pedit_cmd)
 
   local preview_win_id                  = self:get_preview_win_id()
   vim.wo[preview_win_id].relativenumber = false

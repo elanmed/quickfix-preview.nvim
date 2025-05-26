@@ -1,3 +1,4 @@
+local helpers = require "quickfix-preview.helpers"
 local QuickfixPreview = require "quickfix-preview.class"
 local validate = require "quickfix-preview.validator".validate
 local union = require "quickfix-preview.validator".union
@@ -8,8 +9,10 @@ M.close = function()
   qf_preview:close()
 end
 
-M.open = function()
-  qf_preview:open()
+--- @param pedit_prefix? string
+--- @param pedit_postfix? string
+M.open = function(pedit_prefix, pedit_postfix)
+  qf_preview:open(pedit_prefix, pedit_postfix)
 end
 
 --- @param is_disabled boolean
@@ -17,27 +20,9 @@ M.set_preview_disabled = function(is_disabled)
   qf_preview:set_preview_disabled(is_disabled)
 end
 
---- @param try string
---- @param catch string
-local function try_catch(try, catch)
-  local success, _ = pcall(vim.cmd, try)
-  if not success then
-    pcall(vim.cmd, catch)
-  end
-end
-
---- @generic T
---- @param val T | nil
---- @param default_val T
---- @return T
-local function default(val, default_val)
-  if val == nil then
-    return default_val
-  end
-  return val
-end
-
 --- @class QuickfixPreviewOpts
+--- @field pedit_prefix? string A prefix passed to :pedit, can be used to position the preview window. Defualts to `aboveleft`
+--- @field pedit_postfix? string A postfix passed to :pedit. Defualts to an empty string
 --- @field keymaps? QuickfixPreviewKeymaps Keymaps, defaults to none
 
 --- @class QuickfixPreviewKeymaps
@@ -74,6 +59,14 @@ M.setup = function(opts)
   local opts_schema = {
     type = "table",
     entries = {
+      pedit_prefix = {
+        type = "string",
+        optional = true,
+      },
+      pedit_postfix = {
+        type = "string",
+        optional = true,
+      },
       keymaps = {
         type = "table",
         optional = true,
@@ -101,13 +94,13 @@ M.setup = function(opts)
     )
   end
 
-  opts = default(opts, {})
-  local keymaps = default(opts.keymaps, {})
+  opts = helpers.default(opts, {})
+  local keymaps = helpers.default(opts.keymaps, {})
 
   vim.api.nvim_create_autocmd({ "CursorMoved", }, {
     callback = function()
       if vim.bo.buftype ~= "quickfix" then return end
-      qf_preview:open()
+      qf_preview:open(opts.pedit_prefix, opts.pedit_postfix)
     end,
   })
 
@@ -129,7 +122,7 @@ M.setup = function(opts)
             qf_preview:close()
           else
             qf_preview:set_preview_disabled(false)
-            qf_preview:open()
+            qf_preview:open(opts.pedit_prefix, opts.pedit_postfix)
           end
         end, { buffer = true, desc = "Toggle the quickfix preview.", })
       end
@@ -152,21 +145,21 @@ M.setup = function(opts)
       end
 
       if keymaps.next then
-        local circular = default(keymaps.next.circular, true)
+        local circular = helpers.default(keymaps.next.circular, true)
 
         vim.keymap.set("n", keymaps.next.key, function()
           qf_preview:close()
-          if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
+          if circular then helpers.try_catch("cnext", "cfirst") else vim.cmd "cnext" end
           vim.cmd "copen"
         end, { buffer = true, desc = "Go to the next file, preserving focus on the quickfix list.", })
       end
 
       if keymaps.prev then
-        local circular = default(keymaps.prev.circular, true)
+        local circular = helpers.default(keymaps.prev.circular, true)
 
         vim.keymap.set("n", keymaps.prev.key, function()
           qf_preview:close()
-          if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
+          if circular then helpers.try_catch("cprev", "clast") else vim.cmd "cprev" end
           vim.cmd "copen"
         end, { buffer = true, desc = "Go to the prev file, preserving focus on the quickfix list.", })
       end
@@ -174,20 +167,20 @@ M.setup = function(opts)
   })
 
   if keymaps.cnext then
-    local circular = default(keymaps.cnext.circular, true)
+    local circular = helpers.default(keymaps.cnext.circular, true)
 
     vim.keymap.set("n", keymaps.cnext.key, function()
       qf_preview:close()
-      if circular then try_catch("cnext", "cfirst") else vim.cmd "cnext" end
+      if circular then helpers.try_catch("cnext", "cfirst") else vim.cmd "cnext" end
     end, { desc = "Go to the next file, losing focus on the quickfix list.", })
   end
 
   if keymaps.cprev then
-    local circular = default(keymaps.cprev.circular, true)
+    local circular = helpers.default(keymaps.cprev.circular, true)
 
     vim.keymap.set("n", keymaps.cprev.key, function()
       qf_preview:close()
-      if circular then try_catch("cprev", "clast") else vim.cmd "cprev" end
+      if circular then helpers.try_catch("cprev", "clast") else vim.cmd "cprev" end
     end, { desc = "Go to the prev file, losing focus on the quickfix list.", })
   end
 end

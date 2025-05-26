@@ -8,6 +8,13 @@ A simple preview for quickfix list, updates as you move your cursor.
 
 ```lua 
 require "quickfix-preview".setup {
+  -- A prefix passed to the `:pedit` command when opening the quickfix preview. Can 
+  -- be used to specify the preview window location.
+  -- Defaults to `aboveleft`
+  pedit_prefix = "",
+  -- A postfix passed to the `:pedit` command when opening the quickfix preview
+  -- Defaults to an empty string
+  pedit_postfix = "",
   -- By default, no keymaps are set
   keymaps = {
     -- Toggle the quickfix preview.
