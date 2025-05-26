@@ -20,4 +20,36 @@ M.default = function(val, default_val)
   return val
 end
 
+M.get_curr_qf_index = function()
+  local info = vim.fn.getqflist { ["idx"] = 0, }
+  if info.idx == nil then return nil end
+  return info.idx
+end
+
+--- @param circular boolean
+M.get_next_qf_index = function(circular)
+  local curr_qf_index = M.get_curr_qf_index()
+  if curr_qf_index == nil then return nil end
+  local qf_list = vim.fn.getqflist()
+  if curr_qf_index == #qf_list then
+    if circular then return 1 else return curr_qf_index end
+  end
+  return curr_qf_index + 1
+end
+
+--- @param circular boolean
+M.get_prev_qf_index = function(circular)
+  local curr_qf_index = M.get_curr_qf_index()
+  if curr_qf_index == nil then return nil end
+  local qf_list = vim.fn.getqflist()
+  if curr_qf_index == 1 then
+    if circular then
+      return #qf_list
+    else
+      return curr_qf_index
+    end
+  end
+  return curr_qf_index - 1
+end
+
 return M

@@ -147,9 +147,9 @@ M.setup = function(opts)
         local circular = helpers.default(keymaps.next.circular, true)
 
         vim.keymap.set("n", keymaps.next.key, function()
-          qf_preview:close()
-          if circular then helpers.try_catch("cnext", "cfirst") else vim.cmd "cnext" end
-          vim.cmd "copen"
+          local next_qf_index = helpers.get_next_qf_index(circular)
+          if next_qf_index == nil then return end
+          vim.fn.setqflist({}, "a", { ["idx"] = next_qf_index, })
         end, { buffer = true, desc = ":cnext, preserving focus on the quickfix list", })
       end
 
@@ -157,9 +157,9 @@ M.setup = function(opts)
         local circular = helpers.default(keymaps.prev.circular, true)
 
         vim.keymap.set("n", keymaps.prev.key, function()
-          qf_preview:close()
-          if circular then helpers.try_catch("cprev", "clast") else vim.cmd "cprev" end
-          vim.cmd "copen"
+          local prev_qf_index = helpers.get_prev_qf_index(circular)
+          if prev_qf_index == nil then return end
+          vim.fn.setqflist({}, "a", { ["idx"] = prev_qf_index, })
         end, { buffer = true, desc = ":cprev, preserving focus on the quickfix list", })
       end
     end,
