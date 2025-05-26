@@ -140,6 +140,7 @@ T["setup"]["autocommands"]["should close the preview on cclose"] = function()
   child.cmd "cclose"
   expect_preview_visible(false)
 end
+
 T["setup"]["preview_win_opts"] = function()
   child.lua [[ M.setup { preview_win_opts = { number = true, cursorline = true }, } ]]
   child.cmd "copen"
@@ -149,6 +150,17 @@ T["setup"]["preview_win_opts"] = function()
   expect.equality(number_opt, true)     -- defaults to `false`
   local cursorline_opt = child.api.nvim_get_option_value("cursorline", { win = preview_win_id, })
   expect.equality(cursorline_opt, true) -- defaults to `false`
+end
+
+T["setup"]["pedit_prefix"] = function()
+  child.lua [[ M.setup { pedit_prefix = "let g:pedit_prefix = 'prefix applied' |", } ]]
+  child.cmd "copen"
+  expect.equality(child.lua_get "vim.g.pedit_prefix", "prefix applied")
+end
+T["setup"]["pedit_postfix"] = function()
+  child.lua [[ M.setup { pedit_postfix = "| let g:pedit_postfix = 'postfix applied'", } ]]
+  child.cmd "copen"
+  expect.equality(child.lua_get "vim.g.pedit_postfix", "postfix applied")
 end
 
 T["setup"]["keymaps"] = MiniTest.new_set()
