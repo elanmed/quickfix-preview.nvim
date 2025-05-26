@@ -22,12 +22,16 @@ require "quickfix-preview".setup {
   -- By default, no keymaps are set
   keymaps = {
     -- Toggle the quickfix preview
+    -- Buffer-level remap
     toggle = "t",
     -- Open the file undor the cursor, keeping the quickfix list open
+    -- Buffer-level remap
     select_close_preview = "o",
     -- Open the file under the cursor, closing the quickfix list
+    -- Buffer-level remap
     select_close_qf_list = "<cr>",
     -- :cnext, preserving focus on the quickfix list
+    -- Buffer-level remap
     next = {
       key = "<C-n>",
       -- Loop around to the beginning of the quickfix list when reaching the end
@@ -35,10 +39,13 @@ require "quickfix-preview".setup {
       circular = true,
     },
     -- :cprev, preserving focus on the quickfix list
+    -- Buffer-level remap
     prev = { key = "<C-n>", },
     -- :cnext, closing the preview first
+    -- Global remap
     cnext = { key = "]q", },
     -- :cprev, closing the preview first
+    -- Global remap
     cprev = { key = "[q", },
   },
 }
