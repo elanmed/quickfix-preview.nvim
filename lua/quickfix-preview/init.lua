@@ -128,21 +128,19 @@ M.setup = function(opts)
 
       if keymaps.select_close_preview then
         vim.keymap.set("n", keymaps.select_close_preview, function()
-          local curr_qf_index = helpers.get_curr_qf_index()
-          if curr_qf_index == nil then return end
+          local curr_line_nr = vim.fn.line "."
 
           qf_preview:close()
-          vim.cmd("cc " .. curr_qf_index)
+          vim.cmd("cc " .. curr_line_nr)
         end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open", })
       end
 
       if keymaps.select_close_quickfix then
         vim.keymap.set("n", keymaps.select_close_quickfix, function()
-          local curr_qf_index = helpers.get_curr_qf_index()
-          if curr_qf_index == nil then return end
+          local curr_line_nr = vim.fn.line "."
 
           vim.cmd "cclose"
-          vim.cmd("cc " .. curr_qf_index)
+          vim.cmd("cc " .. curr_line_nr)
         end, { buffer = true, desc = "Open the file under the cursor, closing the quickfix list", })
       end
 

@@ -178,12 +178,15 @@ T["setup"]["keymaps"]["select_close_preview should open the current item, keep t
   child.cmd "copen"
   expect_preview_visible(true)
   expect_quickfix_visible(true)
+  child.type_keys "j"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
   child.type_keys "o"
   expect_preview_visible(false)
   expect_quickfix_visible(true)
 
   local win_info = get_win_info(get_file_win_id())
-  expect.equality(win_info.row, 1)
+  expect.equality(win_info.row, 2)
   expect.equality(win_info.buf_path, file_name)
 end
 T["setup"]["keymaps"]["select_close_quickfix should open the current item, close the quickfix list"] = function()
@@ -191,11 +194,14 @@ T["setup"]["keymaps"]["select_close_quickfix should open the current item, close
   child.cmd "copen"
   expect_preview_visible(true)
   expect_quickfix_visible(true)
+  child.type_keys "j"
+  expect_preview_visible(true)
+  expect_quickfix_visible(true)
   child.type_keys "<cr>"
   expect_preview_visible(false)
   expect_quickfix_visible(false)
 
-  expect.equality(get_win_info(get_file_win_id()).row, 1)
+  expect.equality(get_win_info(get_file_win_id()).row, 2)
 end
 
 T["setup"]["keymaps"]["next"] = MiniTest.new_set()
