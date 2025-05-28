@@ -139,6 +139,7 @@ M.setup = function(opts)
         vim.keymap.set("n", keymaps.select_close_quickfix, function()
           local curr_line_nr = vim.fn.line "."
 
+          qf_preview:close()
           vim.cmd "cclose"
           vim.cmd("cc " .. curr_line_nr)
         end, { buffer = true, desc = "Open the file under the cursor, closing the quickfix list", })
