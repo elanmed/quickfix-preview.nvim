@@ -2,7 +2,6 @@ local helpers = require "quickfix-preview.helpers"
 local QuickfixPreview = require "quickfix-preview.class"
 local validate = require "quickfix-preview.validator".validate
 local union = require "quickfix-preview.validator".union
-local qf_preview = QuickfixPreview:new()
 local M = {}
 
 --- @class QuickfixPreviewOpts
@@ -87,6 +86,7 @@ M.setup = function(opts)
 
   opts = helpers.default(opts, {})
   local keymaps = helpers.default(opts.keymaps, {})
+  local qf_preview = QuickfixPreview:new()
 
   vim.api.nvim_create_autocmd({ "CursorMoved", }, {
     callback = function()
