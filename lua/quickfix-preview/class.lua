@@ -23,8 +23,11 @@ end
 function QuickfixPreview:highlight(bufnr)
   local filetype = vim.filetype.match { buf = bufnr, }
   if filetype == nil then return end
-  local lang = vim.treesitter.language.get_lang(filetype)
-  vim.treesitter.start(bufnr, lang)
+
+  local lang_ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
+  if not lang_ok then return end
+
+  pcall(vim.treesitter.start, bufnr, lang)
 end
 
 function QuickfixPreview:get_preview_win_id()
