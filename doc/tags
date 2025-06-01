@@ -1,9 +1,4 @@
-quickfix-preview-close	quickfix-preview.txt	/*quickfix-preview-close*
-quickfix-preview-exported-functions	quickfix-preview.txt	/*quickfix-preview-exported-functions*
-quickfix-preview-open	quickfix-preview.txt	/*quickfix-preview-open*
 quickfix-preview-quickfix-preview.nvim	quickfix-preview.txt	/*quickfix-preview-quickfix-preview.nvim*
-quickfix-preview-set_preview_disabled	quickfix-preview.txt	/*quickfix-preview-set_preview_disabled*
-quickfix-preview-setup	quickfix-preview.txt	/*quickfix-preview-setup*
+quickfix-preview-sample-configuration	quickfix-preview.txt	/*quickfix-preview-sample-configuration*
 quickfix-preview-table-of-contents	quickfix-preview.txt	/*quickfix-preview-table-of-contents*
-quickfix-preview-todo	quickfix-preview.txt	/*quickfix-preview-todo*
 quickfix-preview.txt	quickfix-preview.txt	/*quickfix-preview.txt*

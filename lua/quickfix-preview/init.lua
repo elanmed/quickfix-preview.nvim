@@ -1,7 +1,3 @@
-local helpers = require "quickfix-preview.helpers"
-local QuickfixPreview = require "quickfix-preview.class"
-local validate = require "quickfix-preview.validator".validate
-local union = require "quickfix-preview.validator".union
 local M = {}
 
 --- @class QuickfixPreviewOpts
@@ -25,6 +21,11 @@ local M = {}
 
 --- @param opts QuickfixPreviewOpts | nil
 M.setup = function(opts)
+  local helpers = require "quickfix-preview.helpers"
+  local QuickfixPreview = require "quickfix-preview.class"
+  local validate = require "quickfix-preview.validator".validate
+  local union = require "quickfix-preview.validator".union
+
   --- @type Schema
   local circular_keymap_schema = {
     type = union {
