@@ -1,4 +1,4 @@
--- https://github.com/ElanMedoff/schema-validator.nvim/blob/b364d6fe7d0b65210124849b232eca577e4b41c9/lua/schema-validator/init.lua
+-- https://github.com/elanmed/schema-validator.nvim/blob/3559ea5482a099e85b39473cedfbc6b8d4d0f970/lua/schema-validator/init.lua
 
 --- @generic T
 --- @param val T | nil
@@ -22,6 +22,7 @@ local M = {}
 
 --- @class TableSchema : BaseSchema
 --- @field entries? Type | Schema[]
+--- @field exact? boolean
 
 --- @alias Schema BaseSchema | TableSchema
 
@@ -43,6 +44,16 @@ M.validate = function(schema, val)
       string.format(
         "Expected `type(schema.option)` to be `nil` or `boolean`, received `%s`. Schema: %s",
         type(schema.optional),
+        vim.inspect(schema)
+      )
+    )
+  end
+
+  if type(schema.exact) ~= "nil" and type(schema.exact) ~= "boolean" then
+    error(
+      string.format(
+        "Expected `type(schema.exact)` to be `nil` or `boolean`, received `%s`. Schema: %s",
+        type(schema.exact),
         vim.inspect(schema)
       )
     )
@@ -89,6 +100,20 @@ M.validate = function(schema, val)
         for key, entry in pairs(schema.entries) do
           if not M.validate(entry, val[key]) then
             return false
+          end
+        end
+
+        local exact = default(schema.exact, false)
+        if exact then
+          for key, entry in pairs(val) do
+            local schema_entry = schema.entries[key]
+            if schema_entry == nil then
+              return false
+            end
+
+            if not M.validate(schema_entry, entry) then
+              return false
+            end
           end
         end
 

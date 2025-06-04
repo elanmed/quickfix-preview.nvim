@@ -36,6 +36,7 @@ M.setup = function(opts)
           key = { type = "string", },
           circular = { type = "boolean", optional = true, },
         },
+        exact = true,
       },
     },
     optional = true,
@@ -70,9 +71,11 @@ M.setup = function(opts)
           cnext = circular_keymap_schema,
           cprev = circular_keymap_schema,
         },
+        exact = true,
       },
     },
     optional = true,
+    exact = true,
   }
 
   if not validate(opts_schema, opts) then
