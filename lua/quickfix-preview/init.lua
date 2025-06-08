@@ -79,13 +79,15 @@ M.setup = function(opts)
   }
 
   if not validate(opts_schema, opts) then
-    error(
+    vim.notify(
       string.format(
         "Malformed opts! Expected %s, received %s",
         vim.inspect(opts_schema),
         vim.inspect(opts)
-      )
+      ),
+      vim.log.levels.ERROR
     )
+    return
   end
 
   opts = helpers.default(opts, {})
