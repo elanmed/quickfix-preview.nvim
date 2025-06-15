@@ -81,7 +81,7 @@ M.setup = function(opts)
   if not validate(opts_schema, opts) then
     vim.notify(
       string.format(
-        "Malformed opts! Expected %s, received %s",
+        "Malformed opts passed to quickfix-preview.setup! Expected %s, received %s",
         vim.inspect(opts_schema),
         vim.inspect(opts)
       ),
