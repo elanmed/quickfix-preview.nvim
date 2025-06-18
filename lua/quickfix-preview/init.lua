@@ -138,7 +138,9 @@ M.setup = function(opts)
 
           qf_preview:close()
           vim.cmd("cc " .. curr_line_nr)
-          vim.cmd "e"
+          vim.schedule(function()
+            vim.cmd "edit"
+          end)
         end, { buffer = true, desc = "Open the file undor the cursor, keeping the quickfix list open", })
       end
 
@@ -149,7 +151,9 @@ M.setup = function(opts)
           qf_preview:close()
           vim.cmd "cclose"
           vim.cmd("cc " .. curr_line_nr)
-          vim.cmd "e"
+          vim.schedule(function()
+            vim.cmd "edit"
+          end)
         end, { buffer = true, desc = "Open the file under the cursor, closing the quickfix list", })
       end
 
