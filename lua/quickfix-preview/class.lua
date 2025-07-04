@@ -21,6 +21,8 @@ end
 
 --- @param bufnr number
 function QuickfixPreview:highlight(bufnr)
+  if vim.treesitter.highlighter.active[bufnr] then return end
+
   local filetype = vim.filetype.match { buf = bufnr, }
   if filetype == nil then return end
 
