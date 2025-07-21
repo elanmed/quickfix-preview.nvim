@@ -1,5 +1,3 @@
-local helpers = require "quickfix-preview.helpers"
-
 --- @class QuickfixItem
 --- @field bufnr number
 --- @field lnum number
@@ -54,10 +52,11 @@ end
 function QuickfixPreview:open(opts)
   if self.preview_disabled then return end
 
-  opts = helpers.default(opts, {})
-  local pedit_prefix = helpers.default(opts.pedit_prefix, "aboveleft")
-  local pedit_postfix = helpers.default(opts.pedit_postfix, "")
-  local preview_win_opts = helpers.default(opts.preview_win_opts, {})
+  local h = require "quickfix-preview.helpers"
+  opts = h.default(opts, {})
+  local pedit_prefix = h.default(opts.pedit_prefix, "aboveleft")
+  local pedit_postfix = h.default(opts.pedit_postfix, "")
+  local preview_win_opts = h.default(opts.preview_win_opts, {})
 
   --- @type QuickfixItem[]
   local qf_list = vim.fn.getqflist()
