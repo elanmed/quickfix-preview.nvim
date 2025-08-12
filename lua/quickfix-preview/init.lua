@@ -112,7 +112,7 @@ M.setup = function(opts)
     end,
   })
 
-  vim.api.nvim_create_autocmd({ "FileType", }, {
+  vim.api.nvim_create_autocmd({ "BufWinEnter", }, {
     callback = function()
       if vim.bo.buftype ~= "quickfix" then return end
 
