@@ -64,9 +64,9 @@ function QuickfixPreview:open(opts)
 
   local curr_line_nr = vim.fn.line "."
   local curr_qf_item = qf_list[curr_line_nr]
-  local path         = vim.fn.bufname(curr_qf_item.bufnr)
+  local path = vim.fn.bufname(curr_qf_item.bufnr)
 
-  local pedit_cmd    = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
+  local pedit_cmd = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
   vim.cmd(pedit_cmd)
 
   local preview_win_id = self:get_preview_win_id()
