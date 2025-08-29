@@ -8,6 +8,7 @@ QuickfixPreview.__index = QuickfixPreview
 function QuickfixPreview:new()
   local this = {
     preview_disabled = false,
+    preview_opened_buffers = {},
   }
   return setmetatable(this, QuickfixPreview)
 end
@@ -65,19 +66,30 @@ function QuickfixPreview:open(opts)
   local curr_line_nr = vim.fn.line "."
   local curr_qf_item = qf_list[curr_line_nr]
   local path = vim.fn.bufname(curr_qf_item.bufnr)
+  local is_loaded = vim.api.nvim_buf_is_loaded(curr_qf_item.bufnr)
 
   local pedit_cmd = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
   vim.cmd(pedit_cmd)
 
+  if not is_loaded then
+    self.preview_opened_buffers[curr_qf_item.bufnr] = true
+  end
+
+  if self.preview_opened_buffers[curr_qf_item.bufnr] then
+    vim.api.nvim_set_option_value("buflisted", false, { buf = curr_qf_item.bufnr, })
+    vim.api.nvim_set_option_value("bufhidden", "delete", { buf = curr_qf_item.bufnr, })
+  end
+
   local preview_win_id = self:get_preview_win_id()
   for win_opt_key, win_opt_val in pairs(preview_win_opts) do
-    vim.wo[preview_win_id][win_opt_key] = win_opt_val
+    vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = preview_win_id, })
   end
 
   self:highlight(curr_qf_item.bufnr)
 end
 
 function QuickfixPreview:close()
+  self.preview_opened_buffers = {}
   vim.cmd "pclose"
 end
 
