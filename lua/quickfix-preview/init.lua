@@ -23,7 +23,7 @@ local M = {}
 M.setup = function(opts)
   local helpers = require "quickfix-preview.helpers"
   local QuickfixPreview = require "quickfix-preview.class"
-  local validate = require "quickfix-preview.validator".validate
+  local notify_assert = require "quickfix-preview.validator".notify_assert
   local union = require "quickfix-preview.validator".union
 
   --- @type Schema
@@ -78,15 +78,7 @@ M.setup = function(opts)
     exact = true,
   }
 
-  if not validate(opts_schema, opts) then
-    vim.notify(
-      string.format(
-        "Malformed opts passed to quickfix-preview.setup! Expected %s, received %s",
-        vim.inspect(opts_schema),
-        vim.inspect(opts)
-      ),
-      vim.log.levels.ERROR
-    )
+  if not notify_assert { schema = opts_schema, val = opts, name = "[quickfix-preview.nvim] setup.opts", } then
     return
   end
 
