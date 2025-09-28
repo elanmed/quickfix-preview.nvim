@@ -9,13 +9,13 @@ Configuration options ............... |quickfix-preview-configuration-options|
 `vim.g.quickfix_preview.pedit_prefix`  |quickfix-preview-vim.g.quickfix_preview.pedit_prefix|
 `vim.g.quickfix_preview.pedit_postfix`  |quickfix-preview-vim.g.quickfix_preview.pedit_postfix|
 Plug remaps ................................... |quickfix-preview-plug-remaps|
-`QuickfixPreviewToggle` ............. |quickfix-preview-quickfixpreviewtoggle|
-`QuickfixPreviewSelectClosePreview`  |quickfix-preview-quickfixpreviewselectclosepreview|
-`QuickfixPreviewSelectCloseQuickfix`  |quickfix-preview-quickfixpreviewselectclosequickfix|
-`QuickfixPreviewNext` ................. |quickfix-preview-quickfixpreviewnext|
-`QuickfixPreviewPrev` ................. |quickfix-preview-quickfixpreviewprev|
-`QuickfixPreviewCNext` ............... |quickfix-preview-quickfixpreviewcnext|
-`QuickfixPreviewCPrev` ............... |quickfix-preview-quickfixpreviewcprev|
+`<Plug>QuickfixPreviewToggle` . |quickfix-preview-<plug>quickfixpreviewtoggle|
+`<Plug>QuickfixPreviewSelectClosePreview`  |quickfix-preview-<plug>quickfixpreviewselectclosepreview|
+`<Plug>QuickfixPreviewSelectCloseQuickfix`  |quickfix-preview-<plug>quickfixpreviewselectclosequickfix|
+`<Plug>QuickfixPreviewNext` ..... |quickfix-preview-<plug>quickfixpreviewnext|
+`<Plug>QuickfixPreviewPrev` ..... |quickfix-preview-<plug>quickfixpreviewprev|
+`<Plug>QuickfixPreviewCNext` ... |quickfix-preview-<plug>quickfixpreviewcnext|
+`<Plug>QuickfixPreviewCPrev` ... |quickfix-preview-<plug>quickfixpreviewcprev|
 
 ==============================================================================
 QUICKFIX-PREVIEW.NVIM                 *quickfix-preview-quickfix-preview.nvim*
@@ -81,37 +81,37 @@ PLUG REMAPS                                     *quickfix-preview-plug-remaps*
 
 
                                                                               
-`QUICKFIXPREVIEWTOGGLE`               *quickfix-preview-quickfixpreviewtoggle*
+`<PLUG>QUICKFIXPREVIEWTOGGLE`   *quickfix-preview-<plug>quickfixpreviewtoggle*
 
 - Toggle the quickfix preview
 
                                                                               
-`QUICKFIXPREVIEWSELECTCLOSEPREVIEW`*quickfix-preview-quickfixpreviewselectclosepreview*
+`<PLUG>QUICKFIXPREVIEWSELECTCLOSEPREVIEW`*quickfix-preview-<plug>quickfixpreviewselectclosepreview*
 
 - Open the file undor the cursor, keeping the quickfix list open
 
                                                                               
-`QUICKFIXPREVIEWSELECTCLOSEQUICKFIX`*quickfix-preview-quickfixpreviewselectclosequickfix*
+`<PLUG>QUICKFIXPREVIEWSELECTCLOSEQUICKFIX`*quickfix-preview-<plug>quickfixpreviewselectclosequickfix*
 
 - Open the file under the cursor, closing the quickfix list
 
                                                                               
-`QUICKFIXPREVIEWNEXT`                   *quickfix-preview-quickfixpreviewnext*
+`<PLUG>QUICKFIXPREVIEWNEXT`       *quickfix-preview-<plug>quickfixpreviewnext*
 
 - `:cnext`, preserving focus on the quickfix list
 
                                                                               
-`QUICKFIXPREVIEWPREV`                   *quickfix-preview-quickfixpreviewprev*
+`<PLUG>QUICKFIXPREVIEWPREV`       *quickfix-preview-<plug>quickfixpreviewprev*
 
 - `:cprev`, preserving focus on the quickfix list
 
                                                                               
-`QUICKFIXPREVIEWCNEXT`                 *quickfix-preview-quickfixpreviewcnext*
+`<PLUG>QUICKFIXPREVIEWCNEXT`     *quickfix-preview-<plug>quickfixpreviewcnext*
 
 - `:cnext`, closing the preview first
 
                                                                               
-`QUICKFIXPREVIEWCPREV`                 *quickfix-preview-quickfixpreviewcprev*
+`<PLUG>QUICKFIXPREVIEWCPREV`     *quickfix-preview-<plug>quickfixpreviewcprev*
 
 - `:cprev`, closing the preview first
 

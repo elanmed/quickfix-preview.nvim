@@ -43,24 +43,24 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 
 ## Plug remaps
 
-### `QuickfixPreviewToggle`
+### `<Plug>QuickfixPreviewToggle`
 - Toggle the quickfix preview
 
-### `QuickfixPreviewSelectClosePreview`
+### `<Plug>QuickfixPreviewSelectClosePreview`
 - Open the file undor the cursor, keeping the quickfix list open
 
-### `QuickfixPreviewSelectCloseQuickfix`
+### `<Plug>QuickfixPreviewSelectCloseQuickfix`
 - Open the file under the cursor, closing the quickfix list
 
-### `QuickfixPreviewNext`
+### `<Plug>QuickfixPreviewNext`
 - `:cnext`, preserving focus on the quickfix list
 
-### `QuickfixPreviewPrev`
+### `<Plug>QuickfixPreviewPrev`
 - `:cprev`, preserving focus on the quickfix list
 
-### `QuickfixPreviewCNext`
+### `<Plug>QuickfixPreviewCNext`
 - `:cnext`, closing the preview first
 
-### `QuickfixPreviewCPrev`
+### `<Plug>QuickfixPreviewCPrev`
 - `:cprev`, closing the preview first
 
