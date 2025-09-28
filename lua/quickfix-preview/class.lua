@@ -1,3 +1,14 @@
+--- @generic T
+--- @param val T | nil
+--- @param default_val T
+--- @return T
+local default = function(val, default_val)
+  if val == nil then
+    return default_val
+  end
+  return val
+end
+
 --- @class QuickfixItem
 --- @field bufnr number
 --- @field lnum number
@@ -42,20 +53,19 @@ function QuickfixPreview:is_open()
   return self:get_preview_win_id() ~= nil
 end
 
---- @class QuickfixPreviewOpenOpts
---- @field pedit_prefix? string
---- @field pedit_postfix? string
---- @field preview_win_opts? vim.wo
-
---- @param opts QuickfixPreviewOpenOpts
-function QuickfixPreview:open(opts)
+function QuickfixPreview:open()
   if self.preview_disabled then return end
 
-  local h = require "quickfix-preview.helpers"
-  opts = h.default(opts, {})
-  local pedit_prefix = h.default(opts.pedit_prefix, "aboveleft")
-  local pedit_postfix = h.default(opts.pedit_postfix, "")
-  local preview_win_opts = h.default(opts.preview_win_opts, {})
+  --- @class QuickfixPreviewOpenOpts
+  --- @field pedit_prefix? string
+  --- @field pedit_postfix? string
+  --- @field preview_win_opts? vim.wo
+
+  --- @type QuickfixPreviewOpenOpts
+  local opts = default(vim.g.quickfix_preview, {})
+  local pedit_prefix = default(opts.pedit_prefix, "aboveleft")
+  local pedit_postfix = default(opts.pedit_postfix, "")
+  local preview_win_opts = default(opts.preview_win_opts, {})
 
   local pedit_winnr = self:get_preview_win_id()
   local prev_pedit_bufname = (function()

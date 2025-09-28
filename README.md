@@ -7,17 +7,14 @@ A simple preview for quickfix list, updates as you move your cursor.
 ## Sample configuration
 
 ```lua 
-require "quickfix-preview".setup {
-  -- Options to apply to the preview window. Defaults to an empty table
+vim.g.quickfix_preview = {
   preview_win_opts = {
     number = true,
     relativenumber = false,
     signcolumn = "no",
     cursorline = true,
   },
-  -- A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
-  pedit_prefix = "aboveleft", 
-  -- A postfix passed to :pedit. Defaults to an empty string
+  pedit_prefix = "aboveleft",
   pedit_postfix = "",
 }
 
@@ -32,6 +29,17 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
   end,
 })
 ```
+
+## Configuration options
+
+### `vim.g.quickfix_preview.preview_win_opts`
+- Options to apply to the preview window. Defaults to an empty table
+
+### `vim.g.quickfix_preview.pedit_prefix`
+- A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
+
+### `vim.g.quickfix_preview.pedit_postfix`
+- A postfix passed to :pedit. Defaults to an empty string
 
 ## Plug remaps
 

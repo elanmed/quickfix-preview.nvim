@@ -87,7 +87,6 @@ local T = MiniTest.new_set {
       child.restart { "-u", "scripts/minimal_init.lua", }
       child.bo.readonly = false
       child.lua [[require "nvim-treesitter.configs".setup {} ]]
-      child.lua [[M = require('quickfix-preview')]]
 
       local lines = { "-- alpha", "-- bravo", "-- charlie", }
       child.fn.writefile(lines, file_name)
@@ -113,22 +112,16 @@ local T = MiniTest.new_set {
   },
 }
 
-T["setup"] = MiniTest.new_set()
-T["setup"]["autocommands"] = MiniTest.new_set {
-  hooks = {
-    pre_case = function()
-      child.lua "M.setup()"
-    end,
-  },
-}
-T["setup"]["autocommands"]["should open the preview on copen"] = function()
+T["initialization"] = MiniTest.new_set()
+T["initialization"]["autocommands"] = MiniTest.new_set()
+T["initialization"]["autocommands"]["should open the preview on copen"] = function()
   child.cmd "copen"
   expect_preview_visible(true)
   local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 1)
   expect.equality(win_info.buf_path, file_name)
 end
-T["setup"]["autocommands"]["should refresh the preview on cursor move"] = function()
+T["initialization"]["autocommands"]["should refresh the preview on cursor move"] = function()
   child.cmd "copen"
   child.type_keys "j"
   expect_preview_visible(true)
@@ -136,15 +129,18 @@ T["setup"]["autocommands"]["should refresh the preview on cursor move"] = functi
   expect.equality(win_info.row, 2)
   expect.equality(win_info.buf_path, file_name)
 end
-T["setup"]["autocommands"]["should close the preview on cclose"] = function()
+T["initialization"]["autocommands"]["should close the preview on cclose"] = function()
   child.cmd "copen"
   expect_preview_visible(true)
   child.cmd "cclose"
   expect_preview_visible(false)
 end
 
-T["setup"]["preview_win_opts"] = function()
-  child.lua [[ M.setup { preview_win_opts = { number = true, cursorline = true }, } ]]
+T["configuration"] = MiniTest.new_set()
+T["configuration"]["preview_win_opts"] = function()
+  child.g.quickfix_preview = {
+    preview_win_opts = { number = true, cursorline = true, },
+  }
   child.cmd "copen"
   expect_preview_visible(true)
   local preview_win_id = get_preview_win_id()
@@ -154,21 +150,24 @@ T["setup"]["preview_win_opts"] = function()
   expect.equality(cursorline_opt, true) -- defaults to `false`
 end
 
-T["setup"]["pedit_prefix"] = function()
-  child.lua [[ M.setup { pedit_prefix = "let g:pedit_prefix = 'prefix applied' |", } ]]
+T["configuration"]["pedit_prefix"] = function()
+  child.g.quickfix_preview = {
+    pedit_prefix = "let g:pedit_prefix_applied = 'prefix applied' |",
+  }
   child.cmd "copen"
-  expect.equality(child.lua_get "vim.g.pedit_prefix", "prefix applied")
+  expect.equality(child.lua_get "vim.g.pedit_prefix_applied", "prefix applied")
 end
-T["setup"]["pedit_postfix"] = function()
-  child.lua [[ M.setup { pedit_postfix = "| let g:pedit_postfix = 'postfix applied'", } ]]
+T["configuration"]["pedit_postfix"] = function()
+  child.g.quickfix_preview = {
+    pedit_postfix = "| let g:pedit_postfix_applied = 'postfix applied'",
+  }
   child.cmd "copen"
-  expect.equality(child.lua_get "vim.g.pedit_postfix", "postfix applied")
+  expect.equality(child.lua_get "vim.g.pedit_postfix_applied", "postfix applied")
 end
 
-T["setup"]["keymaps"] = MiniTest.new_set()
-T["setup"]["keymaps"]["toggle should toggle the preview"] = function()
+T["keymaps"] = MiniTest.new_set()
+T["keymaps"]["toggle should toggle the preview"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle")
   ]]
   child.cmd "copen"
@@ -178,9 +177,8 @@ T["setup"]["keymaps"]["toggle should toggle the preview"] = function()
   child.type_keys "t"
   expect_preview_visible(true)
 end
-T["setup"]["keymaps"]["select_close_preview should open the current item, keep the quickfix list open"] = function()
+T["keymaps"]["select_close_preview should open the current item, keep the quickfix list open"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "o", "<Plug>QuickfixPreviewSelectClosePreview")
   ]]
   child.cmd "copen"
@@ -197,9 +195,8 @@ T["setup"]["keymaps"]["select_close_preview should open the current item, keep t
   expect.equality(win_info.row, 2)
   expect.equality(win_info.buf_path, file_name)
 end
-T["setup"]["keymaps"]["select_close_quickfix should open the current item, close the quickfix list"] = function()
+T["keymaps"]["select_close_quickfix should open the current item, close the quickfix list"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "<cr>", "<Plug>QuickfixPreviewSelectCloseQuickfix")
   ]]
   child.cmd "copen"
@@ -215,10 +212,9 @@ T["setup"]["keymaps"]["select_close_quickfix should open the current item, close
   expect.equality(get_win_info(get_file_win_id()).row, 2)
 end
 
-T["setup"]["keymaps"]["next"] = MiniTest.new_set()
-T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix preview open"] = function()
+T["keymaps"]["next"] = MiniTest.new_set()
+T["keymaps"]["next"]["should go to the next item, keep the quickfix preview open"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
   ]]
   child.cmd "copen"
@@ -235,9 +231,8 @@ T["setup"]["keymaps"]["next"]["should go to the next item, keep the quickfix pre
   expect_quickfix_visible(true)
   expect.equality(get_win_info(get_quickfix_win_id()).row, 3)
 end
-T["setup"]["keymaps"]["next"]["should be circular"] = function()
+T["keymaps"]["next"]["should be circular"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
   ]]
   child.cmd "copen"
@@ -247,10 +242,9 @@ T["setup"]["keymaps"]["next"]["should be circular"] = function()
   expect.equality(get_win_info(get_file_win_id()).row, 1)
 end
 
-T["setup"]["keymaps"]["prev"] = MiniTest.new_set()
-T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function()
+T["keymaps"]["prev"] = MiniTest.new_set()
+T["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
   vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev")
   ]]
@@ -268,9 +262,8 @@ T["setup"]["keymaps"]["prev"]["should go to the next item, keep the quickfix lis
   expect_quickfix_visible(true)
   expect.equality(get_win_info(get_quickfix_win_id()).row, 1)
 end
-T["setup"]["keymaps"]["prev"]["should be circular"] = function()
+T["keymaps"]["prev"]["should be circular"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev")
   ]]
   child.cmd "copen"
@@ -281,10 +274,9 @@ T["setup"]["keymaps"]["prev"]["should be circular"] = function()
   expect.equality(get_win_info(get_quickfix_win_id()).row, 3)
 end
 
-T["setup"]["keymaps"]["cnext"] = MiniTest.new_set()
-T["setup"]["keymaps"]["cnext"]["should go to the next item, close the quickfix list"] = function()
+T["keymaps"]["cnext"] = MiniTest.new_set()
+T["keymaps"]["cnext"]["should go to the next item, close the quickfix list"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "gn", "<Plug>QuickfixPreviewCNext")
   ]]
   child.cmd "copen"
@@ -301,9 +293,8 @@ T["setup"]["keymaps"]["cnext"]["should go to the next item, close the quickfix l
   expect_quickfix_visible(true)
   expect.equality(get_win_info(get_file_win_id()).row, 3)
 end
-T["setup"]["keymaps"]["cnext"]["should be circular"] = function()
+T["keymaps"]["cnext"]["should be circular"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "gn", "<Plug>QuickfixPreviewCNext")
   ]]
   child.cmd "copen"
@@ -313,10 +304,9 @@ T["setup"]["keymaps"]["cnext"]["should be circular"] = function()
   expect.equality(get_win_info(get_file_win_id()).row, 1)
 end
 
-T["setup"]["keymaps"]["cprev"] = MiniTest.new_set()
-T["setup"]["keymaps"]["cprev"]["should go to the prev item, close the quickfix list"] = function()
+T["keymaps"]["cprev"] = MiniTest.new_set()
+T["keymaps"]["cprev"]["should go to the prev item, close the quickfix list"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "gn", "<Plug>QuickfixPreviewCNext")
   vim.keymap.set("n", "gp", "<Plug>QuickfixPreviewCPrev")
   ]]
@@ -334,9 +324,8 @@ T["setup"]["keymaps"]["cprev"]["should go to the prev item, close the quickfix l
   expect_quickfix_visible(true)
   expect.equality(get_win_info(get_file_win_id()).row, 1)
 end
-T["setup"]["keymaps"]["cprev"]["should be circular"] = function()
+T["keymaps"]["cprev"]["should be circular"] = function()
   child.lua [[
-  M.setup()
   vim.keymap.set("n", "gp", "<Plug>QuickfixPreviewCPrev")
   ]]
   child.cmd "copen"

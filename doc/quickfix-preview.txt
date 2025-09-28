@@ -4,6 +4,10 @@
 Table of Contents                         *quickfix-preview-table-of-contents*
 
 Sample configuration ................. |quickfix-preview-sample-configuration|
+Configuration options ............... |quickfix-preview-configuration-options|
+`vim.g.quickfix_preview.preview_win_opts`  |quickfix-preview-vim.g.quickfix_preview.preview_win_opts|
+`vim.g.quickfix_preview.pedit_prefix`  |quickfix-preview-vim.g.quickfix_preview.pedit_prefix|
+`vim.g.quickfix_preview.pedit_postfix`  |quickfix-preview-vim.g.quickfix_preview.pedit_postfix|
 Plug remaps ................................... |quickfix-preview-plug-remaps|
 `QuickfixPreviewToggle` ............. |quickfix-preview-quickfixpreviewtoggle|
 `QuickfixPreviewSelectClosePreview`  |quickfix-preview-quickfixpreviewselectclosepreview|
@@ -27,17 +31,14 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
 
 
 >lua
-    require "quickfix-preview".setup {
-      -- Options to apply to the preview window. Defaults to an empty table
+    vim.g.quickfix_preview = {
       preview_win_opts = {
         number = true,
         relativenumber = false,
         signcolumn = "no",
         cursorline = true,
       },
-      -- A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
-      pedit_prefix = "aboveleft", 
-      -- A postfix passed to :pedit. Defaults to an empty string
+      pedit_prefix = "aboveleft",
       pedit_postfix = "",
     }
     
@@ -52,6 +53,27 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
       end,
     })
 <
+
+------------------------------------------------------------------------------
+CONFIGURATION OPTIONS                 *quickfix-preview-configuration-options*
+
+
+
+                                                                              
+`VIM.G.QUICKFIX_PREVIEW.PREVIEW_WIN_OPTS`*quickfix-preview-vim.g.quickfix_preview.preview_win_opts*
+
+- Options to apply to the preview window. Defaults to an empty table
+
+                                                                              
+`VIM.G.QUICKFIX_PREVIEW.PEDIT_PREFIX`*quickfix-preview-vim.g.quickfix_preview.pedit_prefix*
+
+- A prefix passed to :pedit, can be used to position the preview window.
+  Defaults to `aboveleft`
+
+                                                                              
+`VIM.G.QUICKFIX_PREVIEW.PEDIT_POSTFIX`*quickfix-preview-vim.g.quickfix_preview.pedit_postfix*
+
+- A postfix passed to :pedit. Defaults to an empty string
 
 ------------------------------------------------------------------------------
 PLUG REMAPS                                     *quickfix-preview-plug-remaps*
