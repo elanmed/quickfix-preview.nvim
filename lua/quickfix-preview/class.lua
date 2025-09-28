@@ -20,8 +20,6 @@ end
 
 --- @param bufnr number
 function QuickfixPreview:highlight(bufnr)
-  if vim.treesitter.highlighter.active[bufnr] then return end
-
   local filetype = vim.filetype.match { buf = bufnr, }
   if filetype == nil then return end
 
@@ -59,6 +57,14 @@ function QuickfixPreview:open(opts)
   local pedit_postfix = h.default(opts.pedit_postfix, "")
   local preview_win_opts = h.default(opts.preview_win_opts, {})
 
+  local pedit_winnr = self:get_preview_win_id()
+  local prev_pedit_bufname = (function()
+    if not pedit_winnr then return nil end
+    local bufnr = vim.api.nvim_win_get_buf(pedit_winnr)
+    local bufname = vim.api.nvim_buf_get_name(bufnr)
+    return bufname
+  end)()
+
   --- @type QuickfixItem[]
   local qf_list = vim.fn.getqflist()
   if vim.tbl_isempty(qf_list) then return end
@@ -68,8 +74,12 @@ function QuickfixPreview:open(opts)
   local path = vim.fn.bufname(curr_qf_item.bufnr)
   local is_loaded = vim.api.nvim_buf_is_loaded(curr_qf_item.bufnr)
 
-  local pedit_cmd = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
-  vim.cmd(pedit_cmd)
+  if pedit_winnr and prev_pedit_bufname == vim.api.nvim_buf_get_name(curr_qf_item.bufnr) then
+    vim.api.nvim_win_set_cursor(pedit_winnr, { curr_qf_item.lnum, 0, })
+  else
+    local pedit_cmd = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
+    vim.cmd(pedit_cmd)
+  end
 
   if not is_loaded then
     self.preview_opened_buffers[curr_qf_item.bufnr] = true
