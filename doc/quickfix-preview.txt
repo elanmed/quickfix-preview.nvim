@@ -1,4 +1,4 @@
-*quickfix-preview.txt*                                Last change: 2025 May 26
+*quickfix-preview.txt*                          Last change: 2025 September 28
 
 ==============================================================================
 Table of Contents                         *quickfix-preview-table-of-contents*
@@ -44,8 +44,6 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
     vim.api.nvim_create_autocmd({ "FileType", }, {
       pattern = "qf",
       callback = function()
-        if vim.bo.buftype ~= "quickfix" then return end
-    
         vim.keymap.set("n", "o", "<Plug>QuickfixPreviewSelectClosePreview", { buffer = true, })
         vim.keymap.set("n", "<cr>", "<Plug>QuickfixPreviewSelectCloseQuickfix", { buffer = true, })
         vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })

@@ -24,8 +24,6 @@ require "quickfix-preview".setup {
 vim.api.nvim_create_autocmd({ "FileType", }, {
   pattern = "qf",
   callback = function()
-    if vim.bo.buftype ~= "quickfix" then return end
-
     vim.keymap.set("n", "o", "<Plug>QuickfixPreviewSelectClosePreview", { buffer = true, })
     vim.keymap.set("n", "<cr>", "<Plug>QuickfixPreviewSelectCloseQuickfix", { buffer = true, })
     vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
