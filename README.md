@@ -19,34 +19,42 @@ require "quickfix-preview".setup {
   pedit_prefix = "aboveleft", 
   -- A postfix passed to :pedit. Defaults to an empty string
   pedit_postfix = "",
-  -- By default, no keymaps are set
-  keymaps = {
-    -- Toggle the quickfix preview
-    -- Buffer-level remap
-    toggle = "t",
-    -- Open the file undor the cursor, keeping the quickfix list open
-    -- Buffer-level remap
-    select_close_preview = "o",
-    -- Open the file under the cursor, closing the quickfix list
-    -- Buffer-level remap
-    select_close_quickfix = "<cr>",
-    -- :cnext, preserving focus on the quickfix list
-    -- Buffer-level remap
-    next = {
-      key = "<C-n>",
-      -- Loop around to the beginning of the quickfix list when reaching the end
-      -- `circular` defaults to `true` for `next`, `prev`, `cnext`, and `cprev`
-      circular = true,
-    },
-    -- :cprev, preserving focus on the quickfix list
-    -- Buffer-level remap
-    prev = { key = "<C-n>", },
-    -- :cnext, closing the preview first
-    -- Global remap
-    cnext = { key = "]q", },
-    -- :cprev, closing the preview first
-    -- Global remap
-    cprev = { key = "[q", },
-  },
 }
+
+vim.api.nvim_create_autocmd({ "FileType", }, {
+  pattern = "qf",
+  callback = function()
+    if vim.bo.buftype ~= "quickfix" then return end
+
+    vim.keymap.set("n", "o", "<Plug>QuickfixPreviewSelectClosePreview", { buffer = true, })
+    vim.keymap.set("n", "<cr>", "<Plug>QuickfixPreviewSelectCloseQuickfix", { buffer = true, })
+    vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
+    vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext", { buffer = true, })
+    vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev", { buffer = true, })
+  end,
+})
 ```
+
+## Plug remaps
+
+### `QuickfixPreviewToggle`
+- Toggle the quickfix preview
+
+### `QuickfixPreviewSelectClosePreview`
+- Open the file undor the cursor, keeping the quickfix list open
+
+### `QuickfixPreviewSelectCloseQuickfix`
+- Open the file under the cursor, closing the quickfix list
+
+### `QuickfixPreviewNext`
+- `:cnext`, preserving focus on the quickfix list
+
+### `QuickfixPreviewPrev`
+- `:cprev`, preserving focus on the quickfix list
+
+### `QuickfixPreviewCNext`
+- `:cnext`, closing the preview first
+
+### `QuickfixPreviewCPrev`
+- `:cprev`, closing the preview first
+
