@@ -32,35 +32,35 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 
 ## Configuration options
 
-### `vim.g.quickfix_preview.preview_win_opts`
+#### `vim.g.quickfix_preview.preview_win_opts`
 - Options to apply to the preview window. Defaults to an empty table
 
-### `vim.g.quickfix_preview.pedit_prefix`
+#### `vim.g.quickfix_preview.pedit_prefix`
 - A prefix passed to :pedit, can be used to position the preview window. Defaults to `aboveleft`
 
-### `vim.g.quickfix_preview.pedit_postfix`
+#### `vim.g.quickfix_preview.pedit_postfix`
 - A postfix passed to :pedit. Defaults to an empty string
 
 ## Plug remaps
 
-### `<Plug>QuickfixPreviewToggle`
+#### `<Plug>QuickfixPreviewToggle`
 - Toggle the quickfix preview
 
-### `<Plug>QuickfixPreviewSelectClosePreview`
+#### `<Plug>QuickfixPreviewSelectClosePreview`
 - Open the file undor the cursor, keeping the quickfix list open
 
-### `<Plug>QuickfixPreviewSelectCloseQuickfix`
+#### `<Plug>QuickfixPreviewSelectCloseQuickfix`
 - Open the file under the cursor, closing the quickfix list
 
-### `<Plug>QuickfixPreviewNext`
+#### `<Plug>QuickfixPreviewNext`
 - `:cnext`, preserving focus on the quickfix list
 
-### `<Plug>QuickfixPreviewPrev`
+#### `<Plug>QuickfixPreviewPrev`
 - `:cprev`, preserving focus on the quickfix list
 
-### `<Plug>QuickfixPreviewCNext`
+#### `<Plug>QuickfixPreviewCNext`
 - `:cnext`, closing the preview first
 
-### `<Plug>QuickfixPreviewCPrev`
+#### `<Plug>QuickfixPreviewCPrev`
 - `:cprev`, closing the preview first
 
