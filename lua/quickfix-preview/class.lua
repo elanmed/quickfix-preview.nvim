@@ -9,6 +9,22 @@ local default = function(val, default_val)
   return val
 end
 
+--- @class GetLinesOpts
+--- @field abs_path string
+--- @field end_line number
+--- @param opts GetLinesOpts
+local function get_lines(opts)
+  local lines = {}
+  local idx = 1
+
+  for line in io.lines(opts.abs_path) do
+    table.insert(lines, line)
+    if idx == opts.end_line then break end
+    idx = idx + 1
+  end
+  return lines
+end
+
 --- @class QuickfixItem
 --- @field bufnr number
 --- @field lnum number
@@ -19,7 +35,8 @@ QuickfixPreview.__index = QuickfixPreview
 function QuickfixPreview:new()
   local this = {
     preview_disabled = false,
-    preview_opened_buffers = {},
+    preview_winnr = -1,
+    preview_bufnr = -1,
   }
   return setmetatable(this, QuickfixPreview)
 end
@@ -29,88 +46,67 @@ function QuickfixPreview:set_preview_disabled(disabled)
   self.preview_disabled = disabled
 end
 
---- @param bufnr number
-function QuickfixPreview:highlight(bufnr)
-  local filetype = vim.filetype.match { buf = bufnr, }
-  if filetype == nil then return end
-
-  local lang_ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
-  if not lang_ok then return end
-
-  pcall(vim.treesitter.start, bufnr, lang)
-end
-
-function QuickfixPreview:get_preview_win_id()
-  for _, win_id in ipairs(vim.api.nvim_list_wins()) do
-    if vim.api.nvim_get_option_value("previewwindow", { win = win_id, }) then
-      return win_id
-    end
-  end
-  return nil
-end
-
 function QuickfixPreview:is_open()
-  return self:get_preview_win_id() ~= nil
+  return vim.api.nvim_win_is_valid(self.preview_winnr)
 end
 
 function QuickfixPreview:open()
   if self.preview_disabled then return end
 
   --- @class QuickfixPreviewOpenOpts
-  --- @field pedit_prefix? string
-  --- @field pedit_postfix? string
   --- @field preview_win_opts? vim.wo
+  --- @field open_preview_win_opts? vim.api.keyset.win_config
 
   --- @type QuickfixPreviewOpenOpts
   local opts = default(vim.g.quickfix_preview, {})
-  local pedit_prefix = default(opts.pedit_prefix, "aboveleft")
-  local pedit_postfix = default(opts.pedit_postfix, "")
-  local preview_win_opts = default(opts.preview_win_opts, {})
-
-  local pedit_winnr = self:get_preview_win_id()
-  local prev_pedit_bufname = (function()
-    if not pedit_winnr then return nil end
-    local bufnr = vim.api.nvim_win_get_buf(pedit_winnr)
-    local bufname = vim.api.nvim_buf_get_name(bufnr)
-    return bufname
-  end)()
+  local preview_win_opts = default(opts.preview_win_opts, {
+    cursorline = true,
+    number = true,
+  })
+  local open_preview_win_opts = default(opts.open_preview_win_opts, {
+    style = "minimal",
+    split = "right",
+    width = math.floor(vim.o.columns / 2),
+  })
 
   --- @type QuickfixItem[]
   local qf_list = vim.fn.getqflist()
-  if vim.tbl_isempty(qf_list) then return end
+  if #qf_list == 0 then return end
 
   local curr_line_nr = vim.fn.line "."
   local curr_qf_item = qf_list[curr_line_nr]
-  local path = vim.fn.bufname(curr_qf_item.bufnr)
-  local is_loaded = vim.api.nvim_buf_is_loaded(curr_qf_item.bufnr)
 
-  if pedit_winnr and prev_pedit_bufname == vim.api.nvim_buf_get_name(curr_qf_item.bufnr) then
-    vim.api.nvim_win_set_cursor(pedit_winnr, { curr_qf_item.lnum, 0, })
-  else
-    local pedit_cmd = string.format("%s pedit +%s %s %s", pedit_prefix, curr_qf_item.lnum, path, pedit_postfix)
-    vim.cmd(pedit_cmd)
+  if not vim.api.nvim_win_is_valid(self.preview_winnr) then
+    self.preview_bufnr = vim.api.nvim_create_buf(false, true)
+    self.preview_winnr = vim.api.nvim_open_win(self.preview_bufnr, false, open_preview_win_opts)
+    vim.api.nvim_set_option_value("filetype", "quickfix-preview", { buf = self.preview_bufnr, })
   end
 
-  if not is_loaded then
-    self.preview_opened_buffers[curr_qf_item.bufnr] = true
-  end
+  local preview_height = vim.api.nvim_win_get_height(0)
+  local lines = get_lines {
+    abs_path = vim.api.nvim_buf_get_name(curr_qf_item.bufnr),
+    end_line = curr_qf_item.lnum + preview_height,
+  }
+  vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, lines)
+  vim.api.nvim_win_set_cursor(self.preview_winnr, { curr_qf_item.lnum, 0, })
 
-  if self.preview_opened_buffers[curr_qf_item.bufnr] then
-    vim.api.nvim_set_option_value("buflisted", false, { buf = curr_qf_item.bufnr, })
-    vim.api.nvim_set_option_value("bufhidden", "delete", { buf = curr_qf_item.bufnr, })
-  end
-
-  local preview_win_id = self:get_preview_win_id()
   for win_opt_key, win_opt_val in pairs(preview_win_opts) do
-    vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = preview_win_id, })
+    vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
   end
 
-  self:highlight(curr_qf_item.bufnr)
+  local filetype = vim.filetype.match { buf = curr_qf_item.bufnr, }
+  if filetype == nil then return end
+
+  local lang_ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
+  if not lang_ok then return end
+
+  pcall(vim.treesitter.start, self.preview_bufnr, lang)
 end
 
 function QuickfixPreview:close()
-  self.preview_opened_buffers = {}
-  vim.cmd "pclose"
+  if vim.api.nvim_win_is_valid(self.preview_winnr) then
+    vim.api.nvim_win_close(self.preview_winnr, true)
+  end
 end
 
 return QuickfixPreview
