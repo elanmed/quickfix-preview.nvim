@@ -15,28 +15,6 @@ local function get_preview_win_id()
   return nil
 end
 
-local function get_quickfix_win_id()
-  for _, win_id in ipairs(child.api.nvim_list_wins()) do
-    local bufnr = child.api.nvim_win_get_buf(win_id)
-    local buf_type = child.api.nvim_get_option_value("buftype", { buf = bufnr, })
-    if buf_type == "quickfix" then
-      return win_id
-    end
-  end
-  return nil
-end
-
-local function get_file_win_id()
-  for _, win_id in ipairs(child.api.nvim_list_wins()) do
-    local bufnr = child.api.nvim_win_get_buf(win_id)
-    local buf_name = vim.fs.basename(child.api.nvim_buf_get_name(bufnr))
-    if buf_name == file_name then
-      return win_id
-    end
-  end
-  return nil
-end
-
 local expect_preview_visible = MiniTest.new_expectation(
   "quickfix preview visible",
   function(is)
@@ -48,21 +26,6 @@ local expect_preview_visible = MiniTest.new_expectation(
       return "Expected the preview to be visible, was not."
     else
       return "Expected the preview not to be visible, was."
-    end
-  end
-)
-
-local expect_quickfix_visible = MiniTest.new_expectation(
-  "quickfix list visible",
-  function(is)
-    local quickfix_win_id = get_quickfix_win_id()
-    return is and quickfix_win_id ~= nil or quickfix_win_id == nil
-  end,
-  function(is)
-    if is then
-      return "Expected the quickfix list to be visible, was not."
-    else
-      return "Expected the quickfix list not to be visible, was."
     end
   end
 )
@@ -138,15 +101,15 @@ end
 T["configuration"] = MiniTest.new_set()
 T["configuration"]["preview_win_opts"] = function()
   child.g.quickfix_preview = {
-    preview_win_opts = { number = true, cursorline = true, },
+    preview_win_opts = { number = false, cursorline = false, },
   }
   child.cmd "copen"
   expect_preview_visible(true)
   local preview_win_id = get_preview_win_id()
   local number_opt = child.api.nvim_get_option_value("number", { win = preview_win_id, })
-  expect.equality(number_opt, true) -- defaults to `false`
+  expect.equality(number_opt, false) -- defaults to `true`
   local cursorline_opt = child.api.nvim_get_option_value("cursorline", { win = preview_win_id, })
-  expect.equality(cursorline_opt, true) -- defaults to `false`
+  expect.equality(cursorline_opt, false) -- defaults to `true`
 end
 
 T["keymaps"] = MiniTest.new_set()
@@ -160,68 +123,6 @@ T["keymaps"]["toggle should toggle the preview"] = function()
   expect_preview_visible(false)
   child.type_keys "t"
   expect_preview_visible(true)
-end
-
-T["keymaps"]["next"] = MiniTest.new_set()
-T["keymaps"]["next"]["should go to the next item, keep the quickfix preview open"] = function()
-  child.lua [[
-  vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
-  ]]
-  child.cmd "copen"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-
-  child.type_keys "<C-n>"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-  expect.equality(get_win_info(get_quickfix_win_id()).row, 2)
-
-  child.type_keys "<C-n>"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-  expect.equality(get_win_info(get_quickfix_win_id()).row, 3)
-end
-T["keymaps"]["next"]["should be circular"] = function()
-  child.lua [[
-  vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
-  ]]
-  child.cmd "copen"
-  child.type_keys "<C-n>"
-  child.type_keys "<C-n>"
-  child.type_keys "<C-n>"
-  expect.equality(get_win_info(get_file_win_id()).row, 1)
-end
-
-T["keymaps"]["prev"] = MiniTest.new_set()
-T["keymaps"]["prev"]["should go to the next item, keep the quickfix list open"] = function()
-  child.lua [[
-  vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext")
-  vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev")
-  ]]
-  child.cmd "copen"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-
-  child.type_keys "<C-n>"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-  expect.equality(get_win_info(get_quickfix_win_id()).row, 2)
-
-  child.type_keys "<C-p>"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-  expect.equality(get_win_info(get_quickfix_win_id()).row, 1)
-end
-T["keymaps"]["prev"]["should be circular"] = function()
-  child.lua [[
-  vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev")
-  ]]
-  child.cmd "copen"
-  expect_preview_visible(true)
-  expect_quickfix_visible(true)
-
-  child.type_keys "<C-p>"
-  expect.equality(get_win_info(get_quickfix_win_id()).row, 3)
 end
 
 return T

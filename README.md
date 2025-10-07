@@ -22,8 +22,6 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
   pattern = "qf",
   callback = function()
     vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
-    vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext", { buffer = true, })
-    vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev", { buffer = true, })
   end,
 })
 ```
@@ -40,12 +38,6 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 
 #### `<Plug>QuickfixPreviewToggle`
 - Toggle the quickfix preview
-
-#### `<Plug>QuickfixPreviewNext`
-- `:cnext`, preserving focus on the quickfix list
-
-#### `<Plug>QuickfixPreviewPrev`
-- `:cprev`, preserving focus on the quickfix list
 
 ## User commands
 

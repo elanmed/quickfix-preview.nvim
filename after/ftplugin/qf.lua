@@ -32,40 +32,8 @@ local toggle = function()
   end
 end
 
-local next = function()
-  local next_qf_index = (function()
-    local curr_qf_index = vim.fn.line "."
-    if curr_qf_index == nil then return nil end
-    local qf_list = vim.fn.getqflist()
-    if curr_qf_index == #qf_list then
-      return 1
-    end
-    return curr_qf_index + 1
-  end)()
-
-  if next_qf_index == nil then return end
-  vim.fn.setqflist({}, "a", { ["idx"] = next_qf_index, })
-end
-
-local prev = function()
-  local prev_qf_index = (function()
-    local curr_qf_index = vim.fn.line "."
-    if curr_qf_index == nil then return nil end
-    local qf_list = vim.fn.getqflist()
-    if curr_qf_index == 1 then
-      return #qf_list
-    end
-    return curr_qf_index - 1
-  end)()
-
-  if prev_qf_index == nil then return end
-  vim.fn.setqflist({}, "a", { ["idx"] = prev_qf_index, })
-end
-
 local keymap_fns = {
   Toggle = toggle,
-  Next = next,
-  Prev = prev,
 }
 
 for action, fn in pairs(keymap_fns) do

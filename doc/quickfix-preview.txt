@@ -9,8 +9,6 @@ Configuration options ............... |quickfix-preview-configuration-options|
 `vim.g.quickfix_preview.preview_win_opts`  |quickfix-preview-vim.g.quickfix_preview.preview_win_opts|
 Plug remaps ................................... |quickfix-preview-plug-remaps|
 `<Plug>QuickfixPreviewToggle` . |quickfix-preview-<plug>quickfixpreviewtoggle|
-`<Plug>QuickfixPreviewNext` ..... |quickfix-preview-<plug>quickfixpreviewnext|
-`<Plug>QuickfixPreviewPrev` ..... |quickfix-preview-<plug>quickfixpreviewprev|
 User commands ............................... |quickfix-preview-user-commands|
 `QuickfixPreviewClosePreview` . |quickfix-preview-quickfixpreviewclosepreview|
 
@@ -43,8 +41,6 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
       pattern = "qf",
       callback = function()
         vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
-        vim.keymap.set("n", "<C-n>", "<Plug>QuickfixPreviewNext", { buffer = true, })
-        vim.keymap.set("n", "<C-p>", "<Plug>QuickfixPreviewPrev", { buffer = true, })
       end,
     })
 <
@@ -74,16 +70,6 @@ PLUG REMAPS                                     *quickfix-preview-plug-remaps*
 `<PLUG>QUICKFIXPREVIEWTOGGLE`   *quickfix-preview-<plug>quickfixpreviewtoggle*
 
 - Toggle the quickfix preview
-
-                                                                              
-`<PLUG>QUICKFIXPREVIEWNEXT`       *quickfix-preview-<plug>quickfixpreviewnext*
-
-- `:cnext`, preserving focus on the quickfix list
-
-                                                                              
-`<PLUG>QUICKFIXPREVIEWPREV`       *quickfix-preview-<plug>quickfixpreviewprev*
-
-- `:cprev`, preserving focus on the quickfix list
 
 ------------------------------------------------------------------------------
 USER COMMANDS                                 *quickfix-preview-user-commands*
