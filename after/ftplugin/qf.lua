@@ -71,3 +71,7 @@ local keymap_fns = {
 for action, fn in pairs(keymap_fns) do
   vim.keymap.set("n", "<Plug>QuickfixPreview" .. action, fn, { desc = "QuickfixPreview: " .. action, })
 end
+
+vim.api.nvim_create_user_command("QuickfixPreviewClosePreview", function()
+  qf_preview:close()
+end, { nargs = 0, })

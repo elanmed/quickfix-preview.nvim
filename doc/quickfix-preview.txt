@@ -1,4 +1,4 @@
-*quickfix-preview.txt*                          Last change: 2025 September 28
+*quickfix-preview.txt*                            Last change: 2025 October 06
 
 ==============================================================================
 Table of Contents                         *quickfix-preview-table-of-contents*
@@ -11,6 +11,8 @@ Plug remaps ................................... |quickfix-preview-plug-remaps|
 `<Plug>QuickfixPreviewToggle` . |quickfix-preview-<plug>quickfixpreviewtoggle|
 `<Plug>QuickfixPreviewNext` ..... |quickfix-preview-<plug>quickfixpreviewnext|
 `<Plug>QuickfixPreviewPrev` ..... |quickfix-preview-<plug>quickfixpreviewprev|
+User commands ............................... |quickfix-preview-user-commands|
+`QuickfixPreviewClosePreview` . |quickfix-preview-quickfixpreviewclosepreview|
 
 ==============================================================================
 QUICKFIX-PREVIEW.NVIM                 *quickfix-preview-quickfix-preview.nvim*
@@ -82,5 +84,15 @@ PLUG REMAPS                                     *quickfix-preview-plug-remaps*
 `<PLUG>QUICKFIXPREVIEWPREV`       *quickfix-preview-<plug>quickfixpreviewprev*
 
 - `:cprev`, preserving focus on the quickfix list
+
+------------------------------------------------------------------------------
+USER COMMANDS                                 *quickfix-preview-user-commands*
+
+
+
+                                                                              
+`QUICKFIXPREVIEWCLOSEPREVIEW`   *quickfix-preview-quickfixpreviewclosepreview*
+
+- Manually close the preview
 
 vim:tw=78:ts=8:ft=help:norl:

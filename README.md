@@ -46,3 +46,8 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 
 #### `<Plug>QuickfixPreviewPrev`
 - `:cprev`, preserving focus on the quickfix list
+
+## User commands
+
+#### `QuickfixPreviewClosePreview`
+- Manually close the preview
