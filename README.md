@@ -1,6 +1,8 @@
 # quickfix-preview.nvim
 
-A simple preview for quickfix list, updates as you move your cursor.
+A simple preview for quickfix list
+
+![demo](https://elanmed.dev/nvim-plugins/quickfix-preview.png)
 
 ## Sample configuration
 
