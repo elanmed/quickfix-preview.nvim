@@ -84,6 +84,17 @@ T["initialization"]["autocommands"]["should open the preview on copen"] = functi
   local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 1)
 end
+T["initialization"]["autocommands"]["should gracefully handle items that can't be previewed"] = function()
+  child.fn.setqflist({ { filename = "asdf.lua", text = "invalid", }, }, "a")
+  child.cmd "copen"
+  child.type_keys "G"
+  expect_preview_visible(true)
+  local preview_bufnr = child.api.nvim_win_get_buf(get_preview_win_id())
+  local preview_content = child.api.nvim_buf_get_lines(preview_bufnr, 0, -1, false)
+  expect.equality(preview_content, { "[quickfix-preview.nvim]: Unable to preview file", })
+  local win_info = get_win_info(get_preview_win_id())
+  expect.equality(win_info.row, 1)
+end
 T["initialization"]["autocommands"]["should refresh the preview on cursor move"] = function()
   child.cmd "copen"
   child.type_keys "j"

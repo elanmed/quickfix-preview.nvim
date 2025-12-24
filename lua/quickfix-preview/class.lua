@@ -14,9 +14,14 @@ end
 --- @field end_line number
 --- @param opts GetLinesOpts
 local function get_lines(opts)
+  --- @type string[]
   local lines = {}
-  local idx = 1
+  if vim.uv.fs_stat(opts.abs_path) == nil then
+    table.insert(lines, "[quickfix-preview.nvim]: Unable to preview file")
+    return lines
+  end
 
+  local idx = 1
   for line in io.lines(opts.abs_path) do
     table.insert(lines, line)
     if idx == opts.end_line then break end
@@ -88,7 +93,7 @@ function QuickfixPreview:open()
     end_line = curr_qf_item.lnum + preview_height,
   }
   vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, lines)
-  vim.api.nvim_win_set_cursor(self.preview_winnr, { curr_qf_item.lnum, 0, })
+  pcall(vim.api.nvim_win_set_cursor, self.preview_winnr, { curr_qf_item.lnum, 0, })
 
   for win_opt_key, win_opt_val in pairs(preview_win_opts) do
     vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
