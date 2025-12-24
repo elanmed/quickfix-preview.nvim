@@ -6,7 +6,7 @@ A simple preview for quickfix list
 
 ## Sample configuration
 
-```lua 
+```lua
 vim.g.quickfix_preview = {
   -- defaults:
   open_preview_win_opts = {
@@ -31,17 +31,25 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 ## Configuration options
 
 #### `vim.g.quickfix_preview.open_preview_win_opts`
+
 - Options passed as the third argument to `vim.api.nvim_open_win` when opening the preview options
 
 #### `vim.g.quickfix_preview.preview_win_opts`
+
 - Window-level options to apply to the preview window
 
 ## Plug remaps
 
 #### `<Plug>QuickfixPreviewToggle`
+
 - Toggle the quickfix preview
 
 ## User commands
 
 #### `QuickfixPreviewClosePreview`
+
 - Manually close the preview
+
+## TODO
+
+- Support scrolling the preview
