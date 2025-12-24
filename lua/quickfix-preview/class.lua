@@ -27,6 +27,7 @@ end
 
 --- @class QuickfixItem
 --- @field bufnr number
+--- @field filename string
 --- @field lnum number
 
 local QuickfixPreview = {}
@@ -82,8 +83,14 @@ function QuickfixPreview:open()
     vim.api.nvim_set_option_value("filetype", "quickfix-preview", { buf = self.preview_bufnr, })
   end
 
-  local abs_path = vim.api.nvim_buf_get_name(curr_qf_item.bufnr)
-  if not vim.api.nvim_buf_is_valid(curr_qf_item.bufnr) or vim.uv.fs_stat(abs_path) == nil then
+  local abs_path = (function()
+    if not curr_qf_item.bufnr or not vim.api.nvim_buf_is_valid(curr_qf_item.bufnr) then
+      return vim.fs.abspath(curr_qf_item.filename)
+    end
+    return vim.api.nvim_buf_get_name(curr_qf_item.bufnr)
+  end)()
+
+  if vim.uv.fs_stat(abs_path) == nil then
     vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, { "[quickfix-preview.nvim]: Unable to preview file", })
     return
   end
@@ -100,7 +107,7 @@ function QuickfixPreview:open()
     vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
   end
 
-  local filetype = vim.filetype.match { buf = curr_qf_item.bufnr, }
+  local filetype = vim.filetype.match { filename = abs_path, }
   if filetype == nil then return end
 
   local lang_ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
