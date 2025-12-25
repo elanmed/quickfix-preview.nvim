@@ -40,18 +40,16 @@ end
 --- @field curr_qf_item QuickfixItem
 --- @param opts SetPreviewLinesOpts
 function QuickfixPreview:set_preview_lines(opts)
-  local abs_path = (
-    function()
-      local get_abs_filename = function()
-        if opts.curr_qf_item.filename == nil then return nil end
-        vim.fs.normalize(vim.fs.abspath(opts.curr_qf_item.filename))
-      end
-
-      if opts.curr_qf_item.bufnr == nil then return get_abs_filename() end
-      if not vim.api.nvim_buf_is_valid(opts.curr_qf_item.bufnr) then return get_abs_filename() end
-      return vim.api.nvim_buf_get_name(opts.curr_qf_item.bufnr)
+  local abs_path = (function()
+    local get_abs_filename = function()
+      if opts.curr_qf_item.filename == nil then return nil end
+      vim.fs.normalize(vim.fs.abspath(opts.curr_qf_item.filename))
     end
-  )()
+
+    if opts.curr_qf_item.bufnr == nil then return get_abs_filename() end
+    if not vim.api.nvim_buf_is_valid(opts.curr_qf_item.bufnr) then return get_abs_filename() end
+    return vim.api.nvim_buf_get_name(opts.curr_qf_item.bufnr)
+  end)()
 
 
   local preview_lines = {}
