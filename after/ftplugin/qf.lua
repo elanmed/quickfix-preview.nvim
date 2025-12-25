@@ -8,7 +8,7 @@ local QuickfixPreview = require "quickfix-preview.class"
 local qf_preview = QuickfixPreview:new()
 
 
-vim.api.nvim_create_autocmd({ "CursorMoved", }, {
+vim.api.nvim_create_autocmd("CursorMoved", {
   buffer = bufnr,
   callback = function()
     qf_preview:open()
@@ -32,8 +32,13 @@ local toggle = function()
   end
 end
 
+local scroll_down = function() qf_preview:scroll_down() end
+local scroll_up = function() qf_preview:scroll_up() end
+
 local keymap_fns = {
   Toggle = toggle,
+  ScrollDown = scroll_down,
+  ScrollUp = scroll_up,
 }
 
 for action, fn in pairs(keymap_fns) do

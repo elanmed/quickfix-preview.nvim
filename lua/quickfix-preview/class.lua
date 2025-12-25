@@ -9,22 +9,6 @@ local if_nil = function(val, fallback)
   return val
 end
 
---- @class GetLinesOpts
---- @field abs_path string
---- @field end_line number
---- @param opts GetLinesOpts
-local function get_lines(opts)
-  local lines = {}
-  local idx = 1
-
-  for line in io.lines(opts.abs_path) do
-    table.insert(lines, line)
-    if idx == opts.end_line then break end
-    idx = idx + 1
-  end
-  return lines
-end
-
 --- @class QuickfixItem
 --- @field bufnr number
 --- @field filename string
@@ -51,6 +35,44 @@ function QuickfixPreview:is_open()
   return vim.api.nvim_win_is_valid(self.preview_winnr)
 end
 
+--- @class SetPreviewLinesOpts
+--- @field end_linenr number
+--- @field curr_qf_item QuickfixItem
+--- @param opts SetPreviewLinesOpts
+function QuickfixPreview:set_preview_lines(opts)
+  local abs_path = (
+    function()
+      local get_abs_filename = function()
+        if opts.curr_qf_item.filename == nil then return nil end
+        vim.fs.normalize(vim.fs.abspath(opts.curr_qf_item.filename))
+      end
+
+      if opts.curr_qf_item.bufnr == nil then return get_abs_filename() end
+      if not vim.api.nvim_buf_is_valid(opts.curr_qf_item.bufnr) then return get_abs_filename() end
+      return vim.api.nvim_buf_get_name(opts.curr_qf_item.bufnr)
+    end
+  )()
+
+
+  local preview_lines = {}
+  local idx = 1
+
+  for line in io.lines(abs_path) do
+    table.insert(preview_lines, line)
+    if idx == opts.end_linenr then break end
+    idx = idx + 1
+  end
+
+  if abs_path == nil or vim.uv.fs_stat(abs_path) == nil then
+    vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false,
+      { "[quickfix-preview.nvim] File cannot be previewed", }
+    )
+    return
+  end
+
+  vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, preview_lines)
+end
+
 function QuickfixPreview:open()
   if self.preview_disabled then return end
 
@@ -74,8 +96,7 @@ function QuickfixPreview:open()
   local qf_list = vim.fn.getqflist()
   if #qf_list == 0 then return end
 
-  local curr_line_nr = vim.fn.line "."
-  local curr_qf_item = qf_list[curr_line_nr]
+  local curr_qf_item = qf_list[vim.fn.line "."]
 
   if not vim.api.nvim_win_is_valid(self.preview_winnr) then
     self.preview_bufnr = vim.api.nvim_create_buf(false, true)
@@ -87,31 +108,15 @@ function QuickfixPreview:open()
     vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
   end
 
-  local preview_height = vim.api.nvim_win_get_height(0)
-  local abs_path = (
-    function()
-      local get_abs_filename = function()
-        if curr_qf_item.filename == nil then return nil end
-        vim.fs.normalize(vim.fs.abspath(curr_qf_item.filename))
-      end
-
-      if curr_qf_item.bufnr == nil then return get_abs_filename() end
-      if not vim.api.nvim_buf_is_valid(curr_qf_item.bufnr) then return get_abs_filename() end
-      return vim.api.nvim_buf_get_name(curr_qf_item.bufnr)
-    end
-  )()
-
-  if vim.uv.fs_stat(abs_path) == nil then
-    vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, { "[quickfix-preview.nvim] File cannot be previewed", })
-    return
-  end
-
-  local lines = get_lines {
-    abs_path = abs_path,
-    end_line = curr_qf_item.lnum + preview_height,
+  local lnum = curr_qf_item.lnum or 1
+  self:set_preview_lines {
+    curr_qf_item = curr_qf_item,
+    end_linenr = self:get_end_linenr(lnum),
   }
-  vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, lines)
-  vim.api.nvim_win_set_cursor(self.preview_winnr, { curr_qf_item.lnum, 0, })
+  vim.api.nvim_win_set_cursor(self.preview_winnr, { lnum, 0, })
+  vim.api.nvim_win_call(self.preview_winnr, function()
+    vim.cmd "normal! zz"
+  end)
 
   local filetype = vim.filetype.match { buf = curr_qf_item.bufnr, }
   if filetype == nil then return end
@@ -126,6 +131,41 @@ function QuickfixPreview:close()
   if vim.api.nvim_win_is_valid(self.preview_winnr) then
     vim.api.nvim_win_close(self.preview_winnr, true)
   end
+end
+
+--- @param lnum number
+function QuickfixPreview:get_end_linenr(lnum)
+  local preview_height = vim.api.nvim_win_get_height(self.preview_winnr)
+  local scroll = vim.wo[self.preview_winnr].scroll
+  local max_visible_screen = lnum + preview_height - 1
+  return max_visible_screen + scroll
+end
+
+function QuickfixPreview:scroll_down()
+  --- @type QuickfixItem[]
+  local qf_list = vim.fn.getqflist()
+  if #qf_list == 0 then return end
+
+  local curr_qf_item = qf_list[vim.fn.line "."]
+
+  vim.api.nvim_win_call(self.preview_winnr, function()
+    vim.cmd 'execute "normal! \\<C-d>"'
+    vim.cmd "normal! zz"
+  end)
+
+  local lnum = unpack(vim.api.nvim_win_get_cursor(self.preview_winnr))
+
+  self:set_preview_lines {
+    curr_qf_item = curr_qf_item,
+    end_linenr = self:get_end_linenr(lnum),
+  }
+end
+
+function QuickfixPreview:scroll_up()
+  vim.api.nvim_win_call(self.preview_winnr, function()
+    vim.cmd 'execute "normal! \\<C-u>"'
+    vim.cmd "normal! zz"
+  end)
 end
 
 return QuickfixPreview
