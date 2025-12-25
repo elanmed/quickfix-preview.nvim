@@ -1,10 +1,10 @@
 --- @generic T
 --- @param val T | nil
---- @param default_val T
+--- @param fallback T
 --- @return T
-local default = function(val, default_val)
+local if_nil = function(val, fallback)
   if val == nil then
-    return default_val
+    return fallback
   end
   return val
 end
@@ -27,6 +27,7 @@ end
 
 --- @class QuickfixItem
 --- @field bufnr number
+--- @field filename string
 --- @field lnum number
 
 local QuickfixPreview = {}
@@ -58,12 +59,12 @@ function QuickfixPreview:open()
   --- @field open_preview_win_opts? vim.api.keyset.win_config
 
   --- @type QuickfixPreviewOpenOpts
-  local opts = default(vim.g.quickfix_preview, {})
-  local preview_win_opts = default(opts.preview_win_opts, {
+  local opts = if_nil(vim.g.quickfix_preview, {})
+  local preview_win_opts = if_nil(opts.preview_win_opts, {
     cursorline = true,
     number = true,
   })
-  local open_preview_win_opts = default(opts.open_preview_win_opts, {
+  local open_preview_win_opts = if_nil(opts.open_preview_win_opts, {
     style = "minimal",
     split = "right",
     width = math.floor(vim.o.columns / 2),
@@ -82,17 +83,35 @@ function QuickfixPreview:open()
     vim.api.nvim_set_option_value("filetype", "quickfix-preview", { buf = self.preview_bufnr, })
   end
 
+  for win_opt_key, win_opt_val in pairs(preview_win_opts) do
+    vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
+  end
+
   local preview_height = vim.api.nvim_win_get_height(0)
+  local abs_path = (
+    function()
+      local get_abs_filename = function()
+        if curr_qf_item.filename == nil then return nil end
+        vim.fs.normalize(vim.fs.abspath(curr_qf_item.filename))
+      end
+
+      if curr_qf_item.bufnr == nil then return get_abs_filename() end
+      if not vim.api.nvim_buf_is_valid(curr_qf_item.bufnr) then return get_abs_filename() end
+      return vim.api.nvim_buf_get_name(curr_qf_item.bufnr)
+    end
+  )()
+
+  if vim.uv.fs_stat(abs_path) == nil then
+    vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, { "[quickfix-preview.nvim] File cannot be previewed", })
+    return
+  end
+
   local lines = get_lines {
-    abs_path = vim.api.nvim_buf_get_name(curr_qf_item.bufnr),
+    abs_path = abs_path,
     end_line = curr_qf_item.lnum + preview_height,
   }
   vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, lines)
   vim.api.nvim_win_set_cursor(self.preview_winnr, { curr_qf_item.lnum, 0, })
-
-  for win_opt_key, win_opt_val in pairs(preview_win_opts) do
-    vim.api.nvim_set_option_value(win_opt_key, win_opt_val, { win = self.preview_winnr, })
-  end
 
   local filetype = vim.filetype.match { buf = curr_qf_item.bufnr, }
   if filetype == nil then return end
