@@ -51,6 +51,12 @@ function QuickfixPreview:set_preview_lines(opts)
     return vim.api.nvim_buf_get_name(opts.curr_qf_item.bufnr)
   end)()
 
+  if abs_path == nil or vim.uv.fs_stat(abs_path) == nil then
+    vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false,
+      { "[quickfix-preview.nvim]: File cannot be previewed", }
+    )
+    return false
+  end
 
   local preview_lines = {}
   local idx = 1
@@ -61,14 +67,8 @@ function QuickfixPreview:set_preview_lines(opts)
     idx = idx + 1
   end
 
-  if abs_path == nil or vim.uv.fs_stat(abs_path) == nil then
-    vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false,
-      { "[quickfix-preview.nvim] File cannot be previewed", }
-    )
-    return
-  end
-
   vim.api.nvim_buf_set_lines(self.preview_bufnr, 0, -1, false, preview_lines)
+  return true
 end
 
 function QuickfixPreview:open()
@@ -107,11 +107,13 @@ function QuickfixPreview:open()
   end
 
   local lnum = curr_qf_item.lnum or 1
-  self:set_preview_lines {
+  local success = self:set_preview_lines {
     curr_qf_item = curr_qf_item,
     end_linenr = self:get_end_linenr(lnum),
   }
-  vim.api.nvim_win_set_cursor(self.preview_winnr, { lnum, 0, })
+  if success then
+    vim.api.nvim_win_set_cursor(self.preview_winnr, { lnum, 0, })
+  end
   vim.api.nvim_win_call(self.preview_winnr, function()
     vim.cmd "normal! zz"
   end)

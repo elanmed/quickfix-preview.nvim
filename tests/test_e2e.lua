@@ -91,7 +91,7 @@ T["initialization"]["autocommands"]["should gracefully handle items that can't b
   expect_preview_visible(true)
   local preview_bufnr = child.api.nvim_win_get_buf(get_preview_win_id())
   local preview_content = child.api.nvim_buf_get_lines(preview_bufnr, 0, -1, false)
-  expect.equality(preview_content, { "[quickfix-preview.nvim]: Unable to preview file", })
+  expect.equality(preview_content, { "[quickfix-preview.nvim]: File cannot be previewed", })
   local win_info = get_win_info(get_preview_win_id())
   expect.equality(win_info.row, 1)
 end
