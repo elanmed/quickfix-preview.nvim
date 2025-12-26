@@ -64,7 +64,3 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 #### `QuickfixPreviewClosePreview`
 
 - Manually close the preview
-
-## TODO
-
-- Support scrolling the preview

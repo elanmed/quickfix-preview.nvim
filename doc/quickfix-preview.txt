@@ -14,7 +14,6 @@ Plug remaps ................................... |quickfix-preview-plug-remaps|
 `<Plug>QuickfixPreviewScrollDown`  |quickfix-preview-<plug>quickfixpreviewscrolldown|
 User commands ............................... |quickfix-preview-user-commands|
 `QuickfixPreviewClosePreview` . |quickfix-preview-quickfixpreviewclosepreview|
-TODO ................................................. |quickfix-preview-todo|
 
 ==============================================================================
 QUICKFIX-PREVIEW.NVIM                 *quickfix-preview-quickfix-preview.nvim*
@@ -111,11 +110,5 @@ USER COMMANDS                                 *quickfix-preview-user-commands*
 `QUICKFIXPREVIEWCLOSEPREVIEW`   *quickfix-preview-quickfixpreviewclosepreview*
 
 - Manually close the preview
-
-------------------------------------------------------------------------------
-TODO                                                   *quickfix-preview-todo*
-
-
-- Support scrolling the preview
 
 vim:tw=78:ts=8:ft=help:norl:
