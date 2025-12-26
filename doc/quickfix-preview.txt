@@ -1,22 +1,28 @@
-*quickfix-preview.txt*                            Last change: 2025 October 06
+*quickfix-preview.txt*                           Last change: 2025 December 25
 
 ==============================================================================
 Table of Contents                         *quickfix-preview-table-of-contents*
 
 Sample configuration ................. |quickfix-preview-sample-configuration|
+Performance ................................... |quickfix-preview-performance|
 Configuration options ............... |quickfix-preview-configuration-options|
 `vim.g.quickfix_preview.open_preview_win_opts`  |quickfix-preview-vim.g.quickfix_preview.open_preview_win_opts|
 `vim.g.quickfix_preview.preview_win_opts`  |quickfix-preview-vim.g.quickfix_preview.preview_win_opts|
 Plug remaps ................................... |quickfix-preview-plug-remaps|
 `<Plug>QuickfixPreviewToggle` . |quickfix-preview-<plug>quickfixpreviewtoggle|
+`<Plug>QuickfixPreviewScrollUp`  |quickfix-preview-<plug>quickfixpreviewscrollup|
+`<Plug>QuickfixPreviewScrollDown`  |quickfix-preview-<plug>quickfixpreviewscrolldown|
 User commands ............................... |quickfix-preview-user-commands|
 `QuickfixPreviewClosePreview` . |quickfix-preview-quickfixpreviewclosepreview|
+TODO ................................................. |quickfix-preview-todo|
 
 ==============================================================================
 QUICKFIX-PREVIEW.NVIM                 *quickfix-preview-quickfix-preview.nvim*
 
 
-A simple preview for quickfix list, updates as you move your cursor.
+A simple preview for quickfix list
+
+demo <https://elanmed.dev/nvim-plugins/quickfix-preview.png>
 
 
 ------------------------------------------------------------------------------
@@ -46,6 +52,21 @@ SAMPLE CONFIGURATION                   *quickfix-preview-sample-configuration*
 <
 
 ------------------------------------------------------------------------------
+PERFORMANCE                                     *quickfix-preview-performance*
+
+
+`quickfix-preview.nvim` considers performance in a few ways:
+
+- Only a single window and buffer is used for the preview - previewing a new
+  file updates the content of the existing buffer instead of creating a new
+  one.
+- The preview is only populated by the first `n` lines of the file, where `n`
+  is the current line number + the height of the preview window + the `scroll`
+  option. This allows the lines for a single scroll down action to be eagerly
+  loaded before the first scroll, while the lines for any further scroll down
+  actions are lazily loaded after subsequent scrolls.
+
+------------------------------------------------------------------------------
 CONFIGURATION OPTIONS                 *quickfix-preview-configuration-options*
 
 
@@ -71,6 +92,16 @@ PLUG REMAPS                                     *quickfix-preview-plug-remaps*
 
 - Toggle the quickfix preview
 
+                                                                              
+`<PLUG>QUICKFIXPREVIEWSCROLLUP`*quickfix-preview-<plug>quickfixpreviewscrollup*
+
+- Scroll the quickfix preview up by `vim.wo.scroll` lines
+
+                                                                              
+`<PLUG>QUICKFIXPREVIEWSCROLLDOWN`*quickfix-preview-<plug>quickfixpreviewscrolldown*
+
+- Scroll the quickfix preview down by `vim.wo.scroll` lines
+
 ------------------------------------------------------------------------------
 USER COMMANDS                                 *quickfix-preview-user-commands*
 
@@ -80,5 +111,11 @@ USER COMMANDS                                 *quickfix-preview-user-commands*
 `QUICKFIXPREVIEWCLOSEPREVIEW`   *quickfix-preview-quickfixpreviewclosepreview*
 
 - Manually close the preview
+
+------------------------------------------------------------------------------
+TODO                                                   *quickfix-preview-todo*
+
+
+- Support scrolling the preview
 
 vim:tw=78:ts=8:ft=help:norl:
