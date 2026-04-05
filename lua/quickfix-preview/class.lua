@@ -177,6 +177,7 @@ function QuickfixPreview:open()
 
   local filetype = vim.filetype.match { buf = curr_qf_item.bufnr, }
   if filetype == nil then return end
+  vim.bo[self.preview_bufnr].filetype = filetype
 
   local lang_ok, lang = pcall(vim.treesitter.language.get_lang, filetype)
   if not lang_ok then return end
