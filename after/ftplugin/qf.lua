@@ -35,6 +35,18 @@ end
 local scroll_down = function() qf_preview:scroll_down() end
 local scroll_up = function() qf_preview:scroll_up() end
 
+--- Plug remaps ~
+---
+--- `<Plug>QuickfixPreviewToggle` ~
+--- Toggle the quickfix preview.
+---
+--- `<Plug>QuickfixPreviewScrollDown` ~
+--- Scroll the quickfix preview down by |scroll| lines.
+---
+--- `<Plug>QuickfixPreviewScrollUp` ~
+--- Scroll the quickfix preview up by |scroll| lines.
+--- @tag quickfix-preview-plug-remaps
+
 local keymap_fns = {
   Toggle = toggle,
   ScrollDown = scroll_down,
@@ -44,6 +56,12 @@ local keymap_fns = {
 for action, fn in pairs(keymap_fns) do
   vim.keymap.set("n", "<Plug>QuickfixPreview" .. action, fn, { desc = "QuickfixPreview: " .. action, })
 end
+
+--- User commands ~
+---
+--- `QuickfixPreviewClosePreview` ~
+--- Manually close the preview.
+--- @tag quickfix-preview-commands
 
 vim.api.nvim_create_user_command("QuickfixPreviewClosePreview", function()
   qf_preview:close()

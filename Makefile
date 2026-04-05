@@ -7,8 +7,9 @@ dev:
 clean:
 	rm -rf ~/.local/share/nvim/site/pack/dev
 
-docs: 
-	./deps/ts-vimdoc.nvim/scripts/docgen.sh README.md doc/quickfix-preview.txt quickfix-preview
+docs:
+	nvim --headless --noplugin -u NONE -c "luafile scripts/minidoc.lua" -c "qa"
+	cp ./doc/quickfix-preview.txt README.txt
 
 lint: 
 	# https://luals.github.io/#install

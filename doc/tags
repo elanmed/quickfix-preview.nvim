@@ -1,4 +1,4 @@
-quickfix-preview-quickfix-preview.nvim	quickfix-preview.txt	/*quickfix-preview-quickfix-preview.nvim*
-quickfix-preview-sample-configuration	quickfix-preview.txt	/*quickfix-preview-sample-configuration*
-quickfix-preview-table-of-contents	quickfix-preview.txt	/*quickfix-preview-table-of-contents*
-quickfix-preview.txt	quickfix-preview.txt	/*quickfix-preview.txt*
+quickfix-preview-commands	quickfix-preview.txt	/*quickfix-preview-commands*
+quickfix-preview-config	quickfix-preview.txt	/*quickfix-preview-config*
+quickfix-preview-plug-remaps	quickfix-preview.txt	/*quickfix-preview-plug-remaps*
+quickfix-preview.nvim	quickfix-preview.txt	/*quickfix-preview.nvim*
