@@ -50,7 +50,6 @@ local T = MiniTest.new_set {
     pre_case = function()
       child.restart { "-u", "scripts/minimal_init.lua", }
       child.bo.readonly = false
-      child.lua [[require "nvim-treesitter.configs".setup {} ]]
 
       local lines = { "-- alpha", "-- bravo", "-- charlie", }
       child.fn.writefile(lines, file_name)
