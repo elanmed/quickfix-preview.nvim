@@ -42,31 +42,31 @@ vim.api.nvim_create_autocmd({ "FileType", }, {
 
 ## Configuration options
 
-##### `vim.g.quickfix_preview.open_preview_win_opts`
+#### `vim.g.quickfix_preview.open_preview_win_opts`
 
 Options passed as the third argument to `vim.api.nvim_open_win` when opening
 the preview window.
 
-##### `vim.g.quickfix_preview.preview_win_opts`
+#### `vim.g.quickfix_preview.preview_win_opts`
 
 Window-level options to apply to the preview window.
 
 ## Plug remaps
 
-##### `<Plug>QuickfixPreviewToggle`
+#### `<Plug>QuickfixPreviewToggle`
 
 Toggle the quickfix preview.
 
-##### `<Plug>QuickfixPreviewScrollUp`
+#### `<Plug>QuickfixPreviewScrollUp`
 
 Scroll the quickfix preview up by `vim.wo.scroll` lines.
 
-##### `<Plug>QuickfixPreviewScrollDown`
+#### `<Plug>QuickfixPreviewScrollDown`
 
 Scroll the quickfix preview down by `vim.wo.scroll` lines.
 
 ## User commands
 
-##### `QuickfixPreviewClosePreview`
+#### `QuickfixPreviewClosePreview`
 
 Manually close the preview.

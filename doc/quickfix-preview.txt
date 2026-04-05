@@ -56,13 +56,13 @@ A simple preview for quickfix list
 3. Configuration options              *quickfix-preview-configuration-options*
 
 
-vim.g.quickfix_preview.open_preview_win_opts*vim.g.quickfix_preview.open_preview_win_opts*
+VIM.G.QUICKFIX_PREVIEW.OPEN_PREVIEW_WIN_OPTS ~
 
 Options passed as the third argument to `vim.api.nvim_open_win` when opening
 the preview window.
 
 
-vim.g.quickfix_preview.preview_win_opts*vim.g.quickfix_preview.preview_win_opts*
+VIM.G.QUICKFIX_PREVIEW.PREVIEW_WIN_OPTS ~
 
 Window-level options to apply to the preview window.
 
@@ -71,17 +71,17 @@ Window-level options to apply to the preview window.
 4. Plug remaps                                  *quickfix-preview-plug-remaps*
 
 
-<Plug>QuickfixPreviewToggle                      *<Plug>QuickfixPreviewToggle*
+<PLUG>QUICKFIXPREVIEWTOGGLE ~
 
 Toggle the quickfix preview.
 
 
-<Plug>QuickfixPreviewScrollUp                  *<Plug>QuickfixPreviewScrollUp*
+<PLUG>QUICKFIXPREVIEWSCROLLUP ~
 
 Scroll the quickfix preview up by `vim.wo.scroll` lines.
 
 
-<Plug>QuickfixPreviewScrollDown              *<Plug>QuickfixPreviewScrollDown*
+<PLUG>QUICKFIXPREVIEWSCROLLDOWN ~
 
 Scroll the quickfix preview down by `vim.wo.scroll` lines.
 
@@ -90,7 +90,7 @@ Scroll the quickfix preview down by `vim.wo.scroll` lines.
 5. User commands                              *quickfix-preview-user-commands*
 
 
-QuickfixPreviewClosePreview                      *QuickfixPreviewClosePreview*
+QUICKFIXPREVIEWCLOSEPREVIEW ~
 
 Manually close the preview.
 
