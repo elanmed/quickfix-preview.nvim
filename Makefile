@@ -8,8 +8,15 @@ clean:
 	rm -rf ~/.local/share/nvim/site/pack/dev
 
 docs:
-	nvim --headless --noplugin -u NONE -c "luafile scripts/minidoc.lua" -c "qa"
-	cp ./doc/quickfix-preview.txt README.txt
+	./deps/panvimdoc/panvimdoc.sh \
+		--project-name quickfix-preview \
+		--input-file README.md \
+		--toc true \
+		--description "" \
+		--dedup-subheadings true \
+		--doc-mapping true \
+		--doc-mapping-project-name false \
+		--shift-heading-level-by -1
 
 lint: 
 	# https://luals.github.io/#install

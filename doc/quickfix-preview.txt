@@ -1,78 +1,104 @@
+*quickfix-preview.txt*       For NVIM v0.13.0       Last change: 2026 April 05
+
 ==============================================================================
-------------------------------------------------------------------------------
-*quickfix-preview.nvim*
-A simple preview for quickfix list.
+Table of Contents                         *quickfix-preview-table-of-contents*
 
-Sample configuration ~
+1. Sample configuration                |quickfix-preview-sample-configuration|
+2. Performance                                  |quickfix-preview-performance|
+3. Configuration options              |quickfix-preview-configuration-options|
+4. Plug remaps                                  |quickfix-preview-plug-remaps|
+5. User commands                              |quickfix-preview-user-commands|
+6. Links                                              |quickfix-preview-links|
+A simple preview for quickfix list
+
+
+==============================================================================
+1. Sample configuration                *quickfix-preview-sample-configuration*
+
 >lua
-  vim.g.quickfix_preview = {
-    -- defaults:
-    open_preview_win_opts = {
-      style = "minimal",
-      split = "right",
-      width = math.floor(vim.o.columns / 2),
-    },
-    preview_win_opts = {
-      cursorline = true,
-      number = true,
+    vim.g.quickfix_preview = {
+      -- defaults:
+      open_preview_win_opts = {
+        style = "minimal",
+        split = "right",
+        width = math.floor(vim.o.columns / 2),
+      },
+      preview_win_opts = {
+        cursorline = true,
+        number = true,
+      }
     }
-  }
-
-  vim.api.nvim_create_autocmd({ "FileType", }, {
-    pattern = "qf",
-    callback = function()
-      vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
-      vim.keymap.set("n", "<C-d>", "<Plug>QuickfixPreviewScrollDown", { buffer = true, })
-      vim.keymap.set("n", "<C-u>", "<Plug>QuickfixPreviewScrollUp", { buffer = true, })
-    end,
-  })
+    
+    vim.api.nvim_create_autocmd({ "FileType", }, {
+      pattern = "qf",
+      callback = function()
+        vim.keymap.set("n", "t", "<Plug>QuickfixPreviewToggle", { buffer = true, })
+      end,
+    })
 <
-------------------------------------------------------------------------------
-Performance ~
+
+
+==============================================================================
+2. Performance                                  *quickfix-preview-performance*
 
 `quickfix-preview.nvim` considers performance in a few ways:
 
-- Only a single window and buffer is used for the preview - previewing a
-  new file updates the content of the existing buffer instead of creating
-  a new one.
-- The preview is only populated by the first `n` lines of the file, where
-  `n` is the current line number + the height of the preview window + the
-  `scroll` option. This allows the lines for a single scroll down action
-  to be eagerly loaded before the first scroll, while the lines for any
-  further scroll down actions are lazily loaded after subsequent scrolls.
+- Only a single window and buffer is used for the preview. Previewing a new
+    file updates the content of the existing buffer instead of creating a new one.
+- The preview is only populated by the first `n` lines of the file, where `n`
+    is the current line number + the height of the preview window + the `scroll`
+    option. This allows the lines for a single scroll down action to be eagerly
+    loaded before the first scroll, while lines for further scrolls are lazily
+    loaded after subsequent scrolls.
 
-------------------------------------------------------------------------------
-                                                       *quickfix-preview-config*
-Configuration ~
 
-`vim.g.quickfix_preview.open_preview_win_opts` ~
-Options passed as the third argument to `vim.api.nvim_open_win` when
-opening the preview window.
+==============================================================================
+3. Configuration options              *quickfix-preview-configuration-options*
 
-`vim.g.quickfix_preview.preview_win_opts` ~
+
+vim.g.quickfix_preview.open_preview_win_opts*vim.g.quickfix_preview.open_preview_win_opts*
+
+Options passed as the third argument to `vim.api.nvim_open_win` when opening
+the preview window.
+
+
+vim.g.quickfix_preview.preview_win_opts*vim.g.quickfix_preview.preview_win_opts*
+
 Window-level options to apply to the preview window.
 
 
 ==============================================================================
-------------------------------------------------------------------------------
-                                                  *quickfix-preview-plug-remaps*
-Plug remaps ~
+4. Plug remaps                                  *quickfix-preview-plug-remaps*
 
-`<Plug>QuickfixPreviewToggle` ~
+
+<Plug>QuickfixPreviewToggle                      *<Plug>QuickfixPreviewToggle*
+
 Toggle the quickfix preview.
 
-`<Plug>QuickfixPreviewScrollDown` ~
-Scroll the quickfix preview down by |scroll| lines.
 
-`<Plug>QuickfixPreviewScrollUp` ~
-Scroll the quickfix preview up by |scroll| lines.
+<Plug>QuickfixPreviewScrollUp                  *<Plug>QuickfixPreviewScrollUp*
 
-------------------------------------------------------------------------------
-                                                     *quickfix-preview-commands*
-User commands ~
+Scroll the quickfix preview up by `vim.wo.scroll` lines.
 
-`QuickfixPreviewClosePreview` ~
+
+<Plug>QuickfixPreviewScrollDown              *<Plug>QuickfixPreviewScrollDown*
+
+Scroll the quickfix preview down by `vim.wo.scroll` lines.
+
+
+==============================================================================
+5. User commands                              *quickfix-preview-user-commands*
+
+
+QuickfixPreviewClosePreview                      *QuickfixPreviewClosePreview*
+
 Manually close the preview.
 
+==============================================================================
+6. Links                                              *quickfix-preview-links*
 
- vim:tw=78:ts=8:noet:ft=help:norl:
+1. *demo*: https://elanmed.dev/nvim-plugins/quickfix-preview.png
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
